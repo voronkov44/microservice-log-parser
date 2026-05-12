@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package topology;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/voronkov44/microservice-log-parser/log-services/proto/topology";
+
+service Topology {
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc GetTopology(GetTopologyRequest) returns (TopologyResponse);
+}
+
+message GetTopologyRequest {
+  int64 log_id = 1;
+}
+
+message TopologyResponse {
+  int64 log_id = 1;
+  repeated TopologyNode nodes = 2;
+  repeated TopologyGroup groups = 3;
+  repeated TopologyEdge edges = 4;
+}
+
+message TopologyNode {
+  int64 id = 1;
+  string node_guid = 2;
+  string node_desc = 3;
+  string node_kind = 4;
+  int32 ports_count = 5;
+}
+
+message TopologyGroup {
+  string name = 1;
+  string kind = 2;
+  repeated TopologyNode nodes = 3;
+}
+
+message TopologyEdge {
+  string source_node_guid = 1;
+  string source_port_guid = 2;
+  string target_node_guid = 3;
+  string target_port_guid = 4;
+  string relation = 5;
+}

@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package parser;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "github.com/voronkov44/microservice-log-parser/log-services/proto/parser";
+
+service Parser {
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+  rpc Parse(ParseRequest) returns (ParseResponse);
+}
+
+message ParseRequest {
+  string path = 1;
+}
+
+message ParseResponse {
+  ParsedLog log = 1;
+}
+
+message ParsedLog {
+  repeated Node nodes = 1;
+  repeated Port ports = 2;
+  repeated NodeInfo nodes_info = 3;
+}
+
+message Node {
+  string node_guid = 1;
+  string node_desc = 2;
+  int32 node_type = 3;
+  string node_kind = 4;
+  int32 num_ports = 5;
+
+  int32 class_version = 6;
+  int32 base_version = 7;
+  string system_image_guid = 8;
+  string port_guid = 9;
+
+  string raw_json = 10;
+}
+
+message Port {
+  string node_guid = 1;
+  string port_guid = 2;
+  int32 port_num = 3;
+
+  int32 lid = 4;
+  int32 local_port_num = 5;
+  int32 port_state = 6;
+  int32 port_phy_state = 7;
+  int32 link_width_active = 8;
+  int32 link_speed_active = 9;
+
+  string raw_json = 10;
+}
+
+message NodeInfo {
+  string node_guid = 1;
+  string serial_number = 2;
+  string part_number = 3;
+  string revision = 4;
+  string product_name = 5;
+
+  string raw_json = 6;
+}

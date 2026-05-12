@@ -1,0 +1,144 @@
+syntax = "proto3";
+
+package repository;
+
+import "google/protobuf/empty.proto";
+import "proto/parser/parser.proto";
+
+option go_package = "github.com/voronkov44/microservice-log-parser/log-services/proto/repository";
+
+service Repository {
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  rpc CreateLog(CreateLogRequest) returns (CreateLogResponse);
+  rpc SaveParsedLog(SaveParsedLogRequest) returns (SaveParsedLogResponse);
+  rpc FailLog(FailLogRequest) returns (google.protobuf.Empty);
+
+  rpc GetLog(GetLogRequest) returns (Log);
+  rpc GetNode(GetNodeRequest) returns (NodeDetails);
+  rpc GetPortsByNode(GetPortsByNodeRequest) returns (PortsResponse);
+
+  rpc GetNodesByLog(GetNodesByLogRequest) returns (NodesResponse);
+  rpc GetPortsByLog(GetPortsByLogRequest) returns (PortsResponse);
+}
+
+enum LogStatus {
+  LOG_STATUS_UNSPECIFIED = 0;
+  LOG_STATUS_PROCESSING = 1;
+  LOG_STATUS_PARSED = 2;
+  LOG_STATUS_FAILED = 3;
+}
+
+message CreateLogRequest {
+  string file_path = 1;
+}
+
+message CreateLogResponse {
+  int64 log_id = 1;
+}
+
+message SaveParsedLogRequest {
+  int64 log_id = 1;
+  parser.ParsedLog parsed_log = 2;
+}
+
+message SaveParsedLogResponse {
+  int64 log_id = 1;
+  int32 nodes_count = 2;
+  int32 ports_count = 3;
+}
+
+message FailLogRequest {
+  int64 log_id = 1;
+  string error = 2;
+}
+
+message GetLogRequest {
+  int64 log_id = 1;
+}
+
+message Log {
+  int64 id = 1;
+  string file_path = 2;
+  LogStatus status = 3;
+  int32 nodes_count = 4;
+  int32 ports_count = 5;
+  string error = 6;
+  int64 uploaded_at_unix = 7;
+  int64 parsed_at_unix = 8;
+}
+
+message GetNodeRequest {
+  int64 node_id = 1;
+}
+
+message GetPortsByNodeRequest {
+  int64 node_id = 1;
+}
+
+message GetNodesByLogRequest {
+  int64 log_id = 1;
+}
+
+message GetPortsByLogRequest {
+  int64 log_id = 1;
+}
+
+message NodeDetails {
+  int64 id = 1;
+  int64 log_id = 2;
+
+  string node_guid = 3;
+  string node_desc = 4;
+  int32 node_type = 5;
+  string node_kind = 6;
+  int32 num_ports = 7;
+
+  int32 class_version = 8;
+  int32 base_version = 9;
+  string system_image_guid = 10;
+  string port_guid = 11;
+
+  NodeInfo info = 12;
+  string raw_json = 13;
+}
+
+message NodeInfo {
+  int64 id = 1;
+  int64 node_id = 2;
+  string node_guid = 3;
+
+  string serial_number = 4;
+  string part_number = 5;
+  string revision = 6;
+  string product_name = 7;
+
+  string raw_json = 8;
+}
+
+message Port {
+  int64 id = 1;
+  int64 log_id = 2;
+  int64 node_id = 3;
+
+  string node_guid = 4;
+  string port_guid = 5;
+  int32 port_num = 6;
+
+  int32 lid = 7;
+  int32 local_port_num = 8;
+  int32 port_state = 9;
+  int32 port_phy_state = 10;
+  int32 link_width_active = 11;
+  int32 link_speed_active = 12;
+
+  string raw_json = 13;
+}
+
+message NodesResponse {
+  repeated NodeDetails nodes = 1;
+}
+
+message PortsResponse {
+  repeated Port ports = 1;
+}
