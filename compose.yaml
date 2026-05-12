@@ -1,4 +1,58 @@
 services:
+  parser:
+    image: log-parser-parser:latest
+    build:
+      context: log-services
+      dockerfile: Dockerfile.parser
+    container_name: log-parser-parser
+    restart: unless-stopped
+    ports:
+      - "28081:8080"
+    volumes:
+      - ./log-services/parser/config.yaml:/config.yaml
+      - ./data:/data
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      PARSER_ADDRESS: :8080
+
+  repository:
+    image: log-parser-repository:latest
+    build:
+      context: log-services
+      dockerfile: Dockerfile.repository
+    container_name: log-parser-repository
+    restart: unless-stopped
+    ports:
+      - "28082:8080"
+    volumes:
+      - ./log-services/repository/config.yaml:/config.yaml
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      REPOSITORY_ADDRESS: :8080
+      DB_ADDRESS: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-postgres}?sslmode=disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  topology:
+    image: log-parser-topology:latest
+    build:
+      context: log-services
+      dockerfile: Dockerfile.topology
+    container_name: log-parser-topology
+    restart: unless-stopped
+    ports:
+      - "28083:8080"
+    volumes:
+      - ./log-services/topology/config.yaml:/config.yaml
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      TOPOLOGY_ADDRESS: :8080
+      REPOSITORY_GRPC_ADDRESS: repository:8080
+    depends_on:
+      repository:
+        condition: service_started
+
   postgres:
     image: postgres:16-alpine
     container_name: log-parser-postgres
@@ -6,13 +60,13 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       retries: 5
       start_period: 10s
