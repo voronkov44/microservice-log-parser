@@ -1,0 +1,32 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Go workspace file
+go.work
+
+# IDE
+log-parser/.idea
+.vscode
+
+# Mac users
+.DS_Store
+
+# .env
+.env
+
+# .idea
+.idea/
+
+# uploaded/input log archives
+data/*
+!data/.gitkeep
