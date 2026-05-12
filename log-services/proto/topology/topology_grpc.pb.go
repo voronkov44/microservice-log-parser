@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: proto/topology/topology.proto
+// source: topology/topology.proto
 
 package topology
 
@@ -156,5 +156,5 @@ var Topology_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/topology/topology.proto",
+	Metadata: "topology/topology.proto",
 }

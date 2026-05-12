@@ -3,7 +3,7 @@ syntax = "proto3";
 package repository;
 
 import "google/protobuf/empty.proto";
-import "proto/parser/parser.proto";
+import "parser/parser.proto";
 
 option go_package = "github.com/voronkov44/microservice-log-parser/log-services/proto/repository";
 

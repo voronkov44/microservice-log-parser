@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: proto/parser/parser.proto
+// source: parser/parser.proto
 
 package parser
 
@@ -156,5 +156,5 @@ var Parser_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/parser/parser.proto",
+	Metadata: "parser/parser.proto",
 }

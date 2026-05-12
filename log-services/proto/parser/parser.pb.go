@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v5.29.3
-// source: proto/parser/parser.proto
+// source: parser/parser.proto
 
 package parser
 
@@ -31,7 +31,7 @@ type ParseRequest struct {
 
 func (x *ParseRequest) Reset() {
 	*x = ParseRequest{}
-	mi := &file_proto_parser_parser_proto_msgTypes[0]
+	mi := &file_parser_parser_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *ParseRequest) String() string {
 func (*ParseRequest) ProtoMessage() {}
 
 func (x *ParseRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_parser_parser_proto_msgTypes[0]
+	mi := &file_parser_parser_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *ParseRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ParseRequest.ProtoReflect.Descriptor instead.
 func (*ParseRequest) Descriptor() ([]byte, []int) {
-	return file_proto_parser_parser_proto_rawDescGZIP(), []int{0}
+	return file_parser_parser_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ParseRequest) GetPath() string {
@@ -75,7 +75,7 @@ type ParseResponse struct {
 
 func (x *ParseResponse) Reset() {
 	*x = ParseResponse{}
-	mi := &file_proto_parser_parser_proto_msgTypes[1]
+	mi := &file_parser_parser_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -87,7 +87,7 @@ func (x *ParseResponse) String() string {
 func (*ParseResponse) ProtoMessage() {}
 
 func (x *ParseResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_parser_parser_proto_msgTypes[1]
+	mi := &file_parser_parser_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +100,7 @@ func (x *ParseResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ParseResponse.ProtoReflect.Descriptor instead.
 func (*ParseResponse) Descriptor() ([]byte, []int) {
-	return file_proto_parser_parser_proto_rawDescGZIP(), []int{1}
+	return file_parser_parser_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ParseResponse) GetLog() *ParsedLog {
@@ -121,7 +121,7 @@ type ParsedLog struct {
 
 func (x *ParsedLog) Reset() {
 	*x = ParsedLog{}
-	mi := &file_proto_parser_parser_proto_msgTypes[2]
+	mi := &file_parser_parser_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -133,7 +133,7 @@ func (x *ParsedLog) String() string {
 func (*ParsedLog) ProtoMessage() {}
 
 func (x *ParsedLog) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_parser_parser_proto_msgTypes[2]
+	mi := &file_parser_parser_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -146,7 +146,7 @@ func (x *ParsedLog) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ParsedLog.ProtoReflect.Descriptor instead.
 func (*ParsedLog) Descriptor() ([]byte, []int) {
-	return file_proto_parser_parser_proto_rawDescGZIP(), []int{2}
+	return file_parser_parser_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ParsedLog) GetNodes() []*Node {
@@ -188,7 +188,7 @@ type Node struct {
 
 func (x *Node) Reset() {
 	*x = Node{}
-	mi := &file_proto_parser_parser_proto_msgTypes[3]
+	mi := &file_parser_parser_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -200,7 +200,7 @@ func (x *Node) String() string {
 func (*Node) ProtoMessage() {}
 
 func (x *Node) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_parser_parser_proto_msgTypes[3]
+	mi := &file_parser_parser_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -213,7 +213,7 @@ func (x *Node) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Node.ProtoReflect.Descriptor instead.
 func (*Node) Descriptor() ([]byte, []int) {
-	return file_proto_parser_parser_proto_rawDescGZIP(), []int{3}
+	return file_parser_parser_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Node) GetNodeGuid() string {
@@ -304,7 +304,7 @@ type Port struct {
 
 func (x *Port) Reset() {
 	*x = Port{}
-	mi := &file_proto_parser_parser_proto_msgTypes[4]
+	mi := &file_parser_parser_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -316,7 +316,7 @@ func (x *Port) String() string {
 func (*Port) ProtoMessage() {}
 
 func (x *Port) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_parser_parser_proto_msgTypes[4]
+	mi := &file_parser_parser_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -329,7 +329,7 @@ func (x *Port) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Port.ProtoReflect.Descriptor instead.
 func (*Port) Descriptor() ([]byte, []int) {
-	return file_proto_parser_parser_proto_rawDescGZIP(), []int{4}
+	return file_parser_parser_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Port) GetNodeGuid() string {
@@ -416,7 +416,7 @@ type NodeInfo struct {
 
 func (x *NodeInfo) Reset() {
 	*x = NodeInfo{}
-	mi := &file_proto_parser_parser_proto_msgTypes[5]
+	mi := &file_parser_parser_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -428,7 +428,7 @@ func (x *NodeInfo) String() string {
 func (*NodeInfo) ProtoMessage() {}
 
 func (x *NodeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_parser_parser_proto_msgTypes[5]
+	mi := &file_parser_parser_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -441,7 +441,7 @@ func (x *NodeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeInfo.ProtoReflect.Descriptor instead.
 func (*NodeInfo) Descriptor() ([]byte, []int) {
-	return file_proto_parser_parser_proto_rawDescGZIP(), []int{5}
+	return file_parser_parser_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *NodeInfo) GetNodeGuid() string {
@@ -486,11 +486,11 @@ func (x *NodeInfo) GetRawJson() string {
 	return ""
 }
 
-var File_proto_parser_parser_proto protoreflect.FileDescriptor
+var File_parser_parser_proto protoreflect.FileDescriptor
 
-const file_proto_parser_parser_proto_rawDesc = "" +
+const file_parser_parser_proto_rawDesc = "" +
 	"\n" +
-	"\x19proto/parser/parser.proto\x12\x06parser\x1a\x1bgoogle/protobuf/empty.proto\"\"\n" +
+	"\x13parser/parser.proto\x12\x06parser\x1a\x1bgoogle/protobuf/empty.proto\"\"\n" +
 	"\fParseRequest\x12\x12\n" +
 	"\x04path\x18\x01 \x01(\tR\x04path\"4\n" +
 	"\rParseResponse\x12#\n" +
@@ -538,19 +538,19 @@ const file_proto_parser_parser_proto_rawDesc = "" +
 	"\x05Parse\x12\x14.parser.ParseRequest\x1a\x15.parser.ParseResponseBIZGgithub.com/voronkov44/microservice-log-parser/log-services/proto/parserb\x06proto3"
 
 var (
-	file_proto_parser_parser_proto_rawDescOnce sync.Once
-	file_proto_parser_parser_proto_rawDescData []byte
+	file_parser_parser_proto_rawDescOnce sync.Once
+	file_parser_parser_proto_rawDescData []byte
 )
 
-func file_proto_parser_parser_proto_rawDescGZIP() []byte {
-	file_proto_parser_parser_proto_rawDescOnce.Do(func() {
-		file_proto_parser_parser_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_parser_parser_proto_rawDesc), len(file_proto_parser_parser_proto_rawDesc)))
+func file_parser_parser_proto_rawDescGZIP() []byte {
+	file_parser_parser_proto_rawDescOnce.Do(func() {
+		file_parser_parser_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_parser_parser_proto_rawDesc), len(file_parser_parser_proto_rawDesc)))
 	})
-	return file_proto_parser_parser_proto_rawDescData
+	return file_parser_parser_proto_rawDescData
 }
 
-var file_proto_parser_parser_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_proto_parser_parser_proto_goTypes = []any{
+var file_parser_parser_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_parser_parser_proto_goTypes = []any{
 	(*ParseRequest)(nil),  // 0: parser.ParseRequest
 	(*ParseResponse)(nil), // 1: parser.ParseResponse
 	(*ParsedLog)(nil),     // 2: parser.ParsedLog
@@ -559,7 +559,7 @@ var file_proto_parser_parser_proto_goTypes = []any{
 	(*NodeInfo)(nil),      // 5: parser.NodeInfo
 	(*emptypb.Empty)(nil), // 6: google.protobuf.Empty
 }
-var file_proto_parser_parser_proto_depIdxs = []int32{
+var file_parser_parser_proto_depIdxs = []int32{
 	2, // 0: parser.ParseResponse.log:type_name -> parser.ParsedLog
 	3, // 1: parser.ParsedLog.nodes:type_name -> parser.Node
 	4, // 2: parser.ParsedLog.ports:type_name -> parser.Port
@@ -575,26 +575,26 @@ var file_proto_parser_parser_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_proto_parser_parser_proto_init() }
-func file_proto_parser_parser_proto_init() {
-	if File_proto_parser_parser_proto != nil {
+func init() { file_parser_parser_proto_init() }
+func file_parser_parser_proto_init() {
+	if File_parser_parser_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_parser_parser_proto_rawDesc), len(file_proto_parser_parser_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_parser_parser_proto_rawDesc), len(file_parser_parser_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_parser_parser_proto_goTypes,
-		DependencyIndexes: file_proto_parser_parser_proto_depIdxs,
-		MessageInfos:      file_proto_parser_parser_proto_msgTypes,
+		GoTypes:           file_parser_parser_proto_goTypes,
+		DependencyIndexes: file_parser_parser_proto_depIdxs,
+		MessageInfos:      file_parser_parser_proto_msgTypes,
 	}.Build()
-	File_proto_parser_parser_proto = out.File
-	file_proto_parser_parser_proto_goTypes = nil
-	file_proto_parser_parser_proto_depIdxs = nil
+	File_parser_parser_proto = out.File
+	file_parser_parser_proto_goTypes = nil
+	file_parser_parser_proto_depIdxs = nil
 }

@@ -1,17 +1,19 @@
+.PHONY: lint protobuf protolint golint fmt tidy test
+
 lint: protolint golint
 
 protobuf:
-	protoc -I . --go_out=. --go_opt=paths=source_relative \
-		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		proto/parser/parser.proto
+	protoc -I proto --go_out=proto --go_opt=paths=source_relative \
+		--go-grpc_out=proto --go-grpc_opt=paths=source_relative \
+		parser/parser.proto
 
-	protoc -I . --go_out=. --go_opt=paths=source_relative \
-		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		proto/repository/repository.proto
+	protoc -I proto --go_out=proto --go_opt=paths=source_relative \
+		--go-grpc_out=proto --go-grpc_opt=paths=source_relative \
+		repository/repository.proto
 
-	protoc -I . --go_out=. --go_opt=paths=source_relative \
-		--go-grpc_out=. --go-grpc_opt=paths=source_relative \
-		proto/topology/topology.proto
+	protoc -I proto --go_out=proto --go_opt=paths=source_relative \
+		--go-grpc_out=proto --go-grpc_opt=paths=source_relative \
+		topology/topology.proto
 
 protolint:
 	protolint .

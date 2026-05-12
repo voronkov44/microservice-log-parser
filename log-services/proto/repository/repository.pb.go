@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v5.29.3
-// source: proto/repository/repository.proto
+// source: repository/repository.proto
 
 package repository
 
@@ -59,11 +59,11 @@ func (x LogStatus) String() string {
 }
 
 func (LogStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_proto_repository_repository_proto_enumTypes[0].Descriptor()
+	return file_repository_repository_proto_enumTypes[0].Descriptor()
 }
 
 func (LogStatus) Type() protoreflect.EnumType {
-	return &file_proto_repository_repository_proto_enumTypes[0]
+	return &file_repository_repository_proto_enumTypes[0]
 }
 
 func (x LogStatus) Number() protoreflect.EnumNumber {
@@ -72,7 +72,7 @@ func (x LogStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LogStatus.Descriptor instead.
 func (LogStatus) EnumDescriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{0}
+	return file_repository_repository_proto_rawDescGZIP(), []int{0}
 }
 
 type CreateLogRequest struct {
@@ -84,7 +84,7 @@ type CreateLogRequest struct {
 
 func (x *CreateLogRequest) Reset() {
 	*x = CreateLogRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[0]
+	mi := &file_repository_repository_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -96,7 +96,7 @@ func (x *CreateLogRequest) String() string {
 func (*CreateLogRequest) ProtoMessage() {}
 
 func (x *CreateLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[0]
+	mi := &file_repository_repository_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -109,7 +109,7 @@ func (x *CreateLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLogRequest.ProtoReflect.Descriptor instead.
 func (*CreateLogRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{0}
+	return file_repository_repository_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *CreateLogRequest) GetFilePath() string {
@@ -128,7 +128,7 @@ type CreateLogResponse struct {
 
 func (x *CreateLogResponse) Reset() {
 	*x = CreateLogResponse{}
-	mi := &file_proto_repository_repository_proto_msgTypes[1]
+	mi := &file_repository_repository_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -140,7 +140,7 @@ func (x *CreateLogResponse) String() string {
 func (*CreateLogResponse) ProtoMessage() {}
 
 func (x *CreateLogResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[1]
+	mi := &file_repository_repository_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -153,7 +153,7 @@ func (x *CreateLogResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLogResponse.ProtoReflect.Descriptor instead.
 func (*CreateLogResponse) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{1}
+	return file_repository_repository_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *CreateLogResponse) GetLogId() int64 {
@@ -173,7 +173,7 @@ type SaveParsedLogRequest struct {
 
 func (x *SaveParsedLogRequest) Reset() {
 	*x = SaveParsedLogRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[2]
+	mi := &file_repository_repository_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -185,7 +185,7 @@ func (x *SaveParsedLogRequest) String() string {
 func (*SaveParsedLogRequest) ProtoMessage() {}
 
 func (x *SaveParsedLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[2]
+	mi := &file_repository_repository_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +198,7 @@ func (x *SaveParsedLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveParsedLogRequest.ProtoReflect.Descriptor instead.
 func (*SaveParsedLogRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{2}
+	return file_repository_repository_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SaveParsedLogRequest) GetLogId() int64 {
@@ -226,7 +226,7 @@ type SaveParsedLogResponse struct {
 
 func (x *SaveParsedLogResponse) Reset() {
 	*x = SaveParsedLogResponse{}
-	mi := &file_proto_repository_repository_proto_msgTypes[3]
+	mi := &file_repository_repository_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -238,7 +238,7 @@ func (x *SaveParsedLogResponse) String() string {
 func (*SaveParsedLogResponse) ProtoMessage() {}
 
 func (x *SaveParsedLogResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[3]
+	mi := &file_repository_repository_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -251,7 +251,7 @@ func (x *SaveParsedLogResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SaveParsedLogResponse.ProtoReflect.Descriptor instead.
 func (*SaveParsedLogResponse) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{3}
+	return file_repository_repository_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *SaveParsedLogResponse) GetLogId() int64 {
@@ -285,7 +285,7 @@ type FailLogRequest struct {
 
 func (x *FailLogRequest) Reset() {
 	*x = FailLogRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[4]
+	mi := &file_repository_repository_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -297,7 +297,7 @@ func (x *FailLogRequest) String() string {
 func (*FailLogRequest) ProtoMessage() {}
 
 func (x *FailLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[4]
+	mi := &file_repository_repository_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -310,7 +310,7 @@ func (x *FailLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FailLogRequest.ProtoReflect.Descriptor instead.
 func (*FailLogRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{4}
+	return file_repository_repository_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *FailLogRequest) GetLogId() int64 {
@@ -336,7 +336,7 @@ type GetLogRequest struct {
 
 func (x *GetLogRequest) Reset() {
 	*x = GetLogRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[5]
+	mi := &file_repository_repository_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -348,7 +348,7 @@ func (x *GetLogRequest) String() string {
 func (*GetLogRequest) ProtoMessage() {}
 
 func (x *GetLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[5]
+	mi := &file_repository_repository_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -361,7 +361,7 @@ func (x *GetLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLogRequest.ProtoReflect.Descriptor instead.
 func (*GetLogRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{5}
+	return file_repository_repository_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetLogRequest) GetLogId() int64 {
@@ -387,7 +387,7 @@ type Log struct {
 
 func (x *Log) Reset() {
 	*x = Log{}
-	mi := &file_proto_repository_repository_proto_msgTypes[6]
+	mi := &file_repository_repository_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -399,7 +399,7 @@ func (x *Log) String() string {
 func (*Log) ProtoMessage() {}
 
 func (x *Log) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[6]
+	mi := &file_repository_repository_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +412,7 @@ func (x *Log) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Log.ProtoReflect.Descriptor instead.
 func (*Log) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{6}
+	return file_repository_repository_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Log) GetId() int64 {
@@ -480,7 +480,7 @@ type GetNodeRequest struct {
 
 func (x *GetNodeRequest) Reset() {
 	*x = GetNodeRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[7]
+	mi := &file_repository_repository_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -492,7 +492,7 @@ func (x *GetNodeRequest) String() string {
 func (*GetNodeRequest) ProtoMessage() {}
 
 func (x *GetNodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[7]
+	mi := &file_repository_repository_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -505,7 +505,7 @@ func (x *GetNodeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNodeRequest.ProtoReflect.Descriptor instead.
 func (*GetNodeRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{7}
+	return file_repository_repository_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetNodeRequest) GetNodeId() int64 {
@@ -524,7 +524,7 @@ type GetPortsByNodeRequest struct {
 
 func (x *GetPortsByNodeRequest) Reset() {
 	*x = GetPortsByNodeRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[8]
+	mi := &file_repository_repository_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -536,7 +536,7 @@ func (x *GetPortsByNodeRequest) String() string {
 func (*GetPortsByNodeRequest) ProtoMessage() {}
 
 func (x *GetPortsByNodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[8]
+	mi := &file_repository_repository_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -549,7 +549,7 @@ func (x *GetPortsByNodeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortsByNodeRequest.ProtoReflect.Descriptor instead.
 func (*GetPortsByNodeRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{8}
+	return file_repository_repository_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetPortsByNodeRequest) GetNodeId() int64 {
@@ -568,7 +568,7 @@ type GetNodesByLogRequest struct {
 
 func (x *GetNodesByLogRequest) Reset() {
 	*x = GetNodesByLogRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[9]
+	mi := &file_repository_repository_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -580,7 +580,7 @@ func (x *GetNodesByLogRequest) String() string {
 func (*GetNodesByLogRequest) ProtoMessage() {}
 
 func (x *GetNodesByLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[9]
+	mi := &file_repository_repository_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -593,7 +593,7 @@ func (x *GetNodesByLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNodesByLogRequest.ProtoReflect.Descriptor instead.
 func (*GetNodesByLogRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{9}
+	return file_repository_repository_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetNodesByLogRequest) GetLogId() int64 {
@@ -612,7 +612,7 @@ type GetPortsByLogRequest struct {
 
 func (x *GetPortsByLogRequest) Reset() {
 	*x = GetPortsByLogRequest{}
-	mi := &file_proto_repository_repository_proto_msgTypes[10]
+	mi := &file_repository_repository_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -624,7 +624,7 @@ func (x *GetPortsByLogRequest) String() string {
 func (*GetPortsByLogRequest) ProtoMessage() {}
 
 func (x *GetPortsByLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[10]
+	mi := &file_repository_repository_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -637,7 +637,7 @@ func (x *GetPortsByLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortsByLogRequest.ProtoReflect.Descriptor instead.
 func (*GetPortsByLogRequest) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{10}
+	return file_repository_repository_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetPortsByLogRequest) GetLogId() int64 {
@@ -668,7 +668,7 @@ type NodeDetails struct {
 
 func (x *NodeDetails) Reset() {
 	*x = NodeDetails{}
-	mi := &file_proto_repository_repository_proto_msgTypes[11]
+	mi := &file_repository_repository_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -680,7 +680,7 @@ func (x *NodeDetails) String() string {
 func (*NodeDetails) ProtoMessage() {}
 
 func (x *NodeDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[11]
+	mi := &file_repository_repository_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -693,7 +693,7 @@ func (x *NodeDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeDetails.ProtoReflect.Descriptor instead.
 func (*NodeDetails) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{11}
+	return file_repository_repository_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *NodeDetails) GetId() int64 {
@@ -803,7 +803,7 @@ type NodeInfo struct {
 
 func (x *NodeInfo) Reset() {
 	*x = NodeInfo{}
-	mi := &file_proto_repository_repository_proto_msgTypes[12]
+	mi := &file_repository_repository_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -815,7 +815,7 @@ func (x *NodeInfo) String() string {
 func (*NodeInfo) ProtoMessage() {}
 
 func (x *NodeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[12]
+	mi := &file_repository_repository_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -828,7 +828,7 @@ func (x *NodeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeInfo.ProtoReflect.Descriptor instead.
 func (*NodeInfo) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{12}
+	return file_repository_repository_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *NodeInfo) GetId() int64 {
@@ -908,7 +908,7 @@ type Port struct {
 
 func (x *Port) Reset() {
 	*x = Port{}
-	mi := &file_proto_repository_repository_proto_msgTypes[13]
+	mi := &file_repository_repository_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +920,7 @@ func (x *Port) String() string {
 func (*Port) ProtoMessage() {}
 
 func (x *Port) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[13]
+	mi := &file_repository_repository_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -933,7 +933,7 @@ func (x *Port) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Port.ProtoReflect.Descriptor instead.
 func (*Port) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{13}
+	return file_repository_repository_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *Port) GetId() int64 {
@@ -1036,7 +1036,7 @@ type NodesResponse struct {
 
 func (x *NodesResponse) Reset() {
 	*x = NodesResponse{}
-	mi := &file_proto_repository_repository_proto_msgTypes[14]
+	mi := &file_repository_repository_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1048,7 +1048,7 @@ func (x *NodesResponse) String() string {
 func (*NodesResponse) ProtoMessage() {}
 
 func (x *NodesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[14]
+	mi := &file_repository_repository_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1061,7 +1061,7 @@ func (x *NodesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodesResponse.ProtoReflect.Descriptor instead.
 func (*NodesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{14}
+	return file_repository_repository_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *NodesResponse) GetNodes() []*NodeDetails {
@@ -1080,7 +1080,7 @@ type PortsResponse struct {
 
 func (x *PortsResponse) Reset() {
 	*x = PortsResponse{}
-	mi := &file_proto_repository_repository_proto_msgTypes[15]
+	mi := &file_repository_repository_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1092,7 +1092,7 @@ func (x *PortsResponse) String() string {
 func (*PortsResponse) ProtoMessage() {}
 
 func (x *PortsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_repository_repository_proto_msgTypes[15]
+	mi := &file_repository_repository_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1105,7 +1105,7 @@ func (x *PortsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PortsResponse.ProtoReflect.Descriptor instead.
 func (*PortsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_repository_repository_proto_rawDescGZIP(), []int{15}
+	return file_repository_repository_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PortsResponse) GetPorts() []*Port {
@@ -1115,12 +1115,12 @@ func (x *PortsResponse) GetPorts() []*Port {
 	return nil
 }
 
-var File_proto_repository_repository_proto protoreflect.FileDescriptor
+var File_repository_repository_proto protoreflect.FileDescriptor
 
-const file_proto_repository_repository_proto_rawDesc = "" +
+const file_repository_repository_proto_rawDesc = "" +
 	"\n" +
-	"!proto/repository/repository.proto\x12\n" +
-	"repository\x1a\x1bgoogle/protobuf/empty.proto\x1a\x19proto/parser/parser.proto\"/\n" +
+	"\x1brepository/repository.proto\x12\n" +
+	"repository\x1a\x1bgoogle/protobuf/empty.proto\x1a\x13parser/parser.proto\"/\n" +
 	"\x10CreateLogRequest\x12\x1b\n" +
 	"\tfile_path\x18\x01 \x01(\tR\bfilePath\"*\n" +
 	"\x11CreateLogResponse\x12\x15\n" +
@@ -1222,20 +1222,20 @@ const file_proto_repository_repository_proto_rawDesc = "" +
 	"\rGetPortsByLog\x12 .repository.GetPortsByLogRequest\x1a\x19.repository.PortsResponseBMZKgithub.com/voronkov44/microservice-log-parser/log-services/proto/repositoryb\x06proto3"
 
 var (
-	file_proto_repository_repository_proto_rawDescOnce sync.Once
-	file_proto_repository_repository_proto_rawDescData []byte
+	file_repository_repository_proto_rawDescOnce sync.Once
+	file_repository_repository_proto_rawDescData []byte
 )
 
-func file_proto_repository_repository_proto_rawDescGZIP() []byte {
-	file_proto_repository_repository_proto_rawDescOnce.Do(func() {
-		file_proto_repository_repository_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_repository_repository_proto_rawDesc), len(file_proto_repository_repository_proto_rawDesc)))
+func file_repository_repository_proto_rawDescGZIP() []byte {
+	file_repository_repository_proto_rawDescOnce.Do(func() {
+		file_repository_repository_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_repository_repository_proto_rawDesc), len(file_repository_repository_proto_rawDesc)))
 	})
-	return file_proto_repository_repository_proto_rawDescData
+	return file_repository_repository_proto_rawDescData
 }
 
-var file_proto_repository_repository_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_repository_repository_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
-var file_proto_repository_repository_proto_goTypes = []any{
+var file_repository_repository_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_repository_repository_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_repository_repository_proto_goTypes = []any{
 	(LogStatus)(0),                // 0: repository.LogStatus
 	(*CreateLogRequest)(nil),      // 1: repository.CreateLogRequest
 	(*CreateLogResponse)(nil),     // 2: repository.CreateLogResponse
@@ -1256,7 +1256,7 @@ var file_proto_repository_repository_proto_goTypes = []any{
 	(*parser.ParsedLog)(nil),      // 17: parser.ParsedLog
 	(*emptypb.Empty)(nil),         // 18: google.protobuf.Empty
 }
-var file_proto_repository_repository_proto_depIdxs = []int32{
+var file_repository_repository_proto_depIdxs = []int32{
 	17, // 0: repository.SaveParsedLogRequest.parsed_log:type_name -> parser.ParsedLog
 	0,  // 1: repository.Log.status:type_name -> repository.LogStatus
 	13, // 2: repository.NodeDetails.info:type_name -> repository.NodeInfo
@@ -1287,27 +1287,27 @@ var file_proto_repository_repository_proto_depIdxs = []int32{
 	0,  // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_proto_repository_repository_proto_init() }
-func file_proto_repository_repository_proto_init() {
-	if File_proto_repository_repository_proto != nil {
+func init() { file_repository_repository_proto_init() }
+func file_repository_repository_proto_init() {
+	if File_repository_repository_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_repository_repository_proto_rawDesc), len(file_proto_repository_repository_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_repository_repository_proto_rawDesc), len(file_repository_repository_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_repository_repository_proto_goTypes,
-		DependencyIndexes: file_proto_repository_repository_proto_depIdxs,
-		EnumInfos:         file_proto_repository_repository_proto_enumTypes,
-		MessageInfos:      file_proto_repository_repository_proto_msgTypes,
+		GoTypes:           file_repository_repository_proto_goTypes,
+		DependencyIndexes: file_repository_repository_proto_depIdxs,
+		EnumInfos:         file_repository_repository_proto_enumTypes,
+		MessageInfos:      file_repository_repository_proto_msgTypes,
 	}.Build()
-	File_proto_repository_repository_proto = out.File
-	file_proto_repository_repository_proto_goTypes = nil
-	file_proto_repository_repository_proto_depIdxs = nil
+	File_repository_repository_proto = out.File
+	file_repository_repository_proto_goTypes = nil
+	file_repository_repository_proto_depIdxs = nil
 }

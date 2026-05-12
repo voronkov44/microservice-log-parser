@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        v5.29.3
-// source: proto/topology/topology.proto
+// source: topology/topology.proto
 
 package topology
 
@@ -31,7 +31,7 @@ type GetTopologyRequest struct {
 
 func (x *GetTopologyRequest) Reset() {
 	*x = GetTopologyRequest{}
-	mi := &file_proto_topology_topology_proto_msgTypes[0]
+	mi := &file_topology_topology_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *GetTopologyRequest) String() string {
 func (*GetTopologyRequest) ProtoMessage() {}
 
 func (x *GetTopologyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_topology_topology_proto_msgTypes[0]
+	mi := &file_topology_topology_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *GetTopologyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTopologyRequest.ProtoReflect.Descriptor instead.
 func (*GetTopologyRequest) Descriptor() ([]byte, []int) {
-	return file_proto_topology_topology_proto_rawDescGZIP(), []int{0}
+	return file_topology_topology_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetTopologyRequest) GetLogId() int64 {
@@ -78,7 +78,7 @@ type TopologyResponse struct {
 
 func (x *TopologyResponse) Reset() {
 	*x = TopologyResponse{}
-	mi := &file_proto_topology_topology_proto_msgTypes[1]
+	mi := &file_topology_topology_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -90,7 +90,7 @@ func (x *TopologyResponse) String() string {
 func (*TopologyResponse) ProtoMessage() {}
 
 func (x *TopologyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_topology_topology_proto_msgTypes[1]
+	mi := &file_topology_topology_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -103,7 +103,7 @@ func (x *TopologyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyResponse.ProtoReflect.Descriptor instead.
 func (*TopologyResponse) Descriptor() ([]byte, []int) {
-	return file_proto_topology_topology_proto_rawDescGZIP(), []int{1}
+	return file_topology_topology_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TopologyResponse) GetLogId() int64 {
@@ -147,7 +147,7 @@ type TopologyNode struct {
 
 func (x *TopologyNode) Reset() {
 	*x = TopologyNode{}
-	mi := &file_proto_topology_topology_proto_msgTypes[2]
+	mi := &file_topology_topology_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -159,7 +159,7 @@ func (x *TopologyNode) String() string {
 func (*TopologyNode) ProtoMessage() {}
 
 func (x *TopologyNode) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_topology_topology_proto_msgTypes[2]
+	mi := &file_topology_topology_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -172,7 +172,7 @@ func (x *TopologyNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyNode.ProtoReflect.Descriptor instead.
 func (*TopologyNode) Descriptor() ([]byte, []int) {
-	return file_proto_topology_topology_proto_rawDescGZIP(), []int{2}
+	return file_topology_topology_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TopologyNode) GetId() int64 {
@@ -221,7 +221,7 @@ type TopologyGroup struct {
 
 func (x *TopologyGroup) Reset() {
 	*x = TopologyGroup{}
-	mi := &file_proto_topology_topology_proto_msgTypes[3]
+	mi := &file_topology_topology_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -233,7 +233,7 @@ func (x *TopologyGroup) String() string {
 func (*TopologyGroup) ProtoMessage() {}
 
 func (x *TopologyGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_topology_topology_proto_msgTypes[3]
+	mi := &file_topology_topology_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +246,7 @@ func (x *TopologyGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyGroup.ProtoReflect.Descriptor instead.
 func (*TopologyGroup) Descriptor() ([]byte, []int) {
-	return file_proto_topology_topology_proto_rawDescGZIP(), []int{3}
+	return file_topology_topology_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *TopologyGroup) GetName() string {
@@ -283,7 +283,7 @@ type TopologyEdge struct {
 
 func (x *TopologyEdge) Reset() {
 	*x = TopologyEdge{}
-	mi := &file_proto_topology_topology_proto_msgTypes[4]
+	mi := &file_topology_topology_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -295,7 +295,7 @@ func (x *TopologyEdge) String() string {
 func (*TopologyEdge) ProtoMessage() {}
 
 func (x *TopologyEdge) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_topology_topology_proto_msgTypes[4]
+	mi := &file_topology_topology_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +308,7 @@ func (x *TopologyEdge) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyEdge.ProtoReflect.Descriptor instead.
 func (*TopologyEdge) Descriptor() ([]byte, []int) {
-	return file_proto_topology_topology_proto_rawDescGZIP(), []int{4}
+	return file_topology_topology_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *TopologyEdge) GetSourceNodeGuid() string {
@@ -346,11 +346,11 @@ func (x *TopologyEdge) GetRelation() string {
 	return ""
 }
 
-var File_proto_topology_topology_proto protoreflect.FileDescriptor
+var File_topology_topology_proto protoreflect.FileDescriptor
 
-const file_proto_topology_topology_proto_rawDesc = "" +
+const file_topology_topology_proto_rawDesc = "" +
 	"\n" +
-	"\x1dproto/topology/topology.proto\x12\btopology\x1a\x1bgoogle/protobuf/empty.proto\"+\n" +
+	"\x17topology/topology.proto\x12\btopology\x1a\x1bgoogle/protobuf/empty.proto\"+\n" +
 	"\x12GetTopologyRequest\x12\x15\n" +
 	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\xb6\x01\n" +
 	"\x10TopologyResponse\x12\x15\n" +
@@ -380,19 +380,19 @@ const file_proto_topology_topology_proto_rawDesc = "" +
 	"\vGetTopology\x12\x1c.topology.GetTopologyRequest\x1a\x1a.topology.TopologyResponseBKZIgithub.com/voronkov44/microservice-log-parser/log-services/proto/topologyb\x06proto3"
 
 var (
-	file_proto_topology_topology_proto_rawDescOnce sync.Once
-	file_proto_topology_topology_proto_rawDescData []byte
+	file_topology_topology_proto_rawDescOnce sync.Once
+	file_topology_topology_proto_rawDescData []byte
 )
 
-func file_proto_topology_topology_proto_rawDescGZIP() []byte {
-	file_proto_topology_topology_proto_rawDescOnce.Do(func() {
-		file_proto_topology_topology_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_proto_topology_topology_proto_rawDesc), len(file_proto_topology_topology_proto_rawDesc)))
+func file_topology_topology_proto_rawDescGZIP() []byte {
+	file_topology_topology_proto_rawDescOnce.Do(func() {
+		file_topology_topology_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_topology_topology_proto_rawDesc), len(file_topology_topology_proto_rawDesc)))
 	})
-	return file_proto_topology_topology_proto_rawDescData
+	return file_topology_topology_proto_rawDescData
 }
 
-var file_proto_topology_topology_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_proto_topology_topology_proto_goTypes = []any{
+var file_topology_topology_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_topology_topology_proto_goTypes = []any{
 	(*GetTopologyRequest)(nil), // 0: topology.GetTopologyRequest
 	(*TopologyResponse)(nil),   // 1: topology.TopologyResponse
 	(*TopologyNode)(nil),       // 2: topology.TopologyNode
@@ -400,7 +400,7 @@ var file_proto_topology_topology_proto_goTypes = []any{
 	(*TopologyEdge)(nil),       // 4: topology.TopologyEdge
 	(*emptypb.Empty)(nil),      // 5: google.protobuf.Empty
 }
-var file_proto_topology_topology_proto_depIdxs = []int32{
+var file_topology_topology_proto_depIdxs = []int32{
 	2, // 0: topology.TopologyResponse.nodes:type_name -> topology.TopologyNode
 	3, // 1: topology.TopologyResponse.groups:type_name -> topology.TopologyGroup
 	4, // 2: topology.TopologyResponse.edges:type_name -> topology.TopologyEdge
@@ -416,26 +416,26 @@ var file_proto_topology_topology_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_proto_topology_topology_proto_init() }
-func file_proto_topology_topology_proto_init() {
-	if File_proto_topology_topology_proto != nil {
+func init() { file_topology_topology_proto_init() }
+func file_topology_topology_proto_init() {
+	if File_topology_topology_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_topology_topology_proto_rawDesc), len(file_proto_topology_topology_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_topology_topology_proto_rawDesc), len(file_topology_topology_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_proto_topology_topology_proto_goTypes,
-		DependencyIndexes: file_proto_topology_topology_proto_depIdxs,
-		MessageInfos:      file_proto_topology_topology_proto_msgTypes,
+		GoTypes:           file_topology_topology_proto_goTypes,
+		DependencyIndexes: file_topology_topology_proto_depIdxs,
+		MessageInfos:      file_topology_topology_proto_msgTypes,
 	}.Build()
-	File_proto_topology_topology_proto = out.File
-	file_proto_topology_topology_proto_goTypes = nil
-	file_proto_topology_topology_proto_depIdxs = nil
+	File_topology_topology_proto = out.File
+	file_topology_topology_proto_goTypes = nil
+	file_topology_topology_proto_depIdxs = nil
 }
