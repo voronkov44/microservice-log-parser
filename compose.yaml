@@ -13,7 +13,7 @@ services:
       - ./logs:/logs
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
-      LOG_FILE_PATH: /logs/app.log
+      LOG_FILE_PATH: ${APP_LOG_FILE_PATH:-/logs/app.log}
       APP_ADDRESS: :8080
       PARSER_GRPC_ADDRESS: parser:8080
       REPOSITORY_GRPC_ADDRESS: repository:8080

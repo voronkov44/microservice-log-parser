@@ -1,5 +1,5 @@
 log_level: DEBUG
-log_file_path: logs/app.log
+log_file_path: ../logs/app.log
 
 api_server:
   address: localhost:8080
