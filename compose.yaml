@@ -1,4 +1,31 @@
 services:
+  app:
+    image: log-parser-app:latest
+    build:
+      context: log-services
+      dockerfile: Dockerfile.app
+    container_name: log-parser-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./log-services/app/config.yaml:/config.yaml
+      - ./logs:/logs
+    environment:
+      LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
+      LOG_FILE_PATH: /logs/app.log
+      APP_ADDRESS: :8080
+      PARSER_GRPC_ADDRESS: parser:8080
+      REPOSITORY_GRPC_ADDRESS: repository:8080
+      TOPOLOGY_GRPC_ADDRESS: topology:8080
+    depends_on:
+      parser:
+        condition: service_started
+      repository:
+        condition: service_started
+      topology:
+        condition: service_started
+
   parser:
     image: log-parser-parser:latest
     build:

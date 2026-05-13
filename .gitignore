@@ -30,3 +30,8 @@ log-parser/.idea
 # uploaded/input log archives
 data/*
 !data/.gitkeep
+
+# logs
+logs/*
+!logs/.gitkeep
+*.log

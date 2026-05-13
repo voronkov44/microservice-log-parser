@@ -1,0 +1,12 @@
+log_level: DEBUG
+log_file_path: logs/app.log
+
+api_server:
+  address: localhost:8080
+  timeout: 5s
+  read_header_timeout: 5s
+  shutdown_timeout: 10s
+
+parser_address: localhost:8081
+repository_address: localhost:8082
+topology_address: localhost:8083
