@@ -55,6 +55,11 @@ func run(cfg config.Config, log *slog.Logger) error {
 		}
 	}()
 
+	// migrations
+	if err := storage.Migrate(); err != nil {
+		return fmt.Errorf("failed to migrate db: %w", err)
+	}
+
 	// service
 	repository := core.NewService(log, storage)
 

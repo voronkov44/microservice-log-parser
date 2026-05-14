@@ -1,0 +1,44 @@
+package db
+
+import (
+	"embed"
+	"errors"
+
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/pgx"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
+)
+
+//go:embed migrations/*.sql
+var migrationFiles embed.FS
+
+func (db *DB) Migrate() error {
+	db.log.Debug("running migrations")
+
+	files, err := iofs.New(migrationFiles, "migrations")
+	if err != nil {
+		return err
+	}
+
+	driver, err := pgx.WithInstance(db.conn.DB, &pgx.Config{})
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithInstance("iofs", files, "pgx", driver)
+	if err != nil {
+		return err
+	}
+
+	if err := m.Up(); err != nil {
+		if !errors.Is(err, migrate.ErrNoChange) {
+			db.log.Error("migration failed", "error", err)
+			return err
+		}
+
+		db.log.Debug("migration did not change anything")
+	}
+
+	db.log.Debug("migrations finished")
+	return nil
+}
