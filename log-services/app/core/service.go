@@ -54,6 +54,66 @@ func (s *Service) ParseLog(ctx context.Context, path string) (ParseLogResult, er
 	}, nil
 }
 
+func (s *Service) GetLog(ctx context.Context, logID int64) (Log, error) {
+	if logID <= 0 {
+		return Log{}, ErrBadArguments
+	}
+
+	return s.repository.GetLog(ctx, logID)
+}
+
+func (s *Service) GetNode(ctx context.Context, nodeID int64) (Node, error) {
+	if nodeID <= 0 {
+		return Node{}, ErrBadArguments
+	}
+
+	return s.repository.GetNode(ctx, nodeID)
+}
+
+func (s *Service) GetNodesByLog(ctx context.Context, logID int64) ([]Node, error) {
+	if logID <= 0 {
+		return nil, ErrBadArguments
+	}
+
+	if _, err := s.repository.GetLog(ctx, logID); err != nil {
+		return nil, err
+	}
+
+	return s.repository.GetNodesByLog(ctx, logID)
+}
+
+func (s *Service) GetPortsByLog(ctx context.Context, logID int64) ([]Port, error) {
+	if logID <= 0 {
+		return nil, ErrBadArguments
+	}
+
+	if _, err := s.repository.GetLog(ctx, logID); err != nil {
+		return nil, err
+	}
+
+	return s.repository.GetPortsByLog(ctx, logID)
+}
+
+func (s *Service) GetPortsByNode(ctx context.Context, nodeID int64) ([]Port, error) {
+	if nodeID <= 0 {
+		return nil, ErrBadArguments
+	}
+
+	if _, err := s.repository.GetNode(ctx, nodeID); err != nil {
+		return nil, err
+	}
+
+	return s.repository.GetPortsByNode(ctx, nodeID)
+}
+
+func (s *Service) GetTopology(ctx context.Context, logID int64) (Topology, error) {
+	if logID <= 0 {
+		return Topology{}, ErrBadArguments
+	}
+
+	return s.topology.GetTopology(ctx, logID)
+}
+
 func (s *Service) failLog(ctx context.Context, logID int64, cause error) {
 	if logID <= 0 || cause == nil {
 		return
@@ -66,12 +126,4 @@ func (s *Service) failLog(ctx context.Context, logID int64, cause error) {
 			"fail_error", err,
 		)
 	}
-}
-
-func (s *Service) GetTopology(ctx context.Context, logID int64) (Topology, error) {
-	if logID <= 0 {
-		return Topology{}, ErrBadArguments
-	}
-
-	return s.topology.GetTopology(ctx, logID)
 }

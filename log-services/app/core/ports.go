@@ -17,6 +17,13 @@ type Repository interface {
 	CreateLog(ctx context.Context, filePath string) (int64, error)
 	SaveParsedLog(ctx context.Context, logID int64, parsed ParsedLog) (SaveParsedLogResult, error)
 	FailLog(ctx context.Context, logID int64, errorText string) error
+
+	GetLog(ctx context.Context, logID int64) (Log, error)
+	GetNode(ctx context.Context, nodeID int64) (Node, error)
+	GetPortsByNode(ctx context.Context, nodeID int64) ([]Port, error)
+
+	GetNodesByLog(ctx context.Context, logID int64) ([]Node, error)
+	GetPortsByLog(ctx context.Context, logID int64) ([]Port, error)
 }
 
 type TopologyProvider interface {
@@ -30,4 +37,13 @@ type LogParser interface {
 
 type TopologyViewer interface {
 	GetTopology(ctx context.Context, logID int64) (Topology, error)
+}
+
+type LogReader interface {
+	GetLog(ctx context.Context, logID int64) (Log, error)
+	GetNode(ctx context.Context, nodeID int64) (Node, error)
+	GetPortsByNode(ctx context.Context, nodeID int64) ([]Port, error)
+
+	GetNodesByLog(ctx context.Context, logID int64) ([]Node, error)
+	GetPortsByLog(ctx context.Context, logID int64) ([]Port, error)
 }

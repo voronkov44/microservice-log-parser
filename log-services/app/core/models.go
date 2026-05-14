@@ -8,6 +8,17 @@ const (
 	LogStatusFailed     LogStatus = "failed"
 )
 
+type Log struct {
+	ID             int64
+	FilePath       string
+	Status         LogStatus
+	NodesCount     int32
+	PortsCount     int32
+	Error          string
+	UploadedAtUnix int64
+	ParsedAtUnix   int64
+}
+
 type ParsedLog struct {
 	Nodes     []Node
 	Ports     []Port
@@ -29,6 +40,9 @@ type SaveParsedLogResult struct {
 }
 
 type Node struct {
+	ID    int64
+	LogID int64
+
 	NodeGUID string
 	NodeDesc string
 	NodeType int32
@@ -40,10 +54,15 @@ type Node struct {
 	SystemImageGUID string
 	PortGUID        string
 
+	Info    *NodeInfo
 	RawJSON string
 }
 
 type Port struct {
+	ID     int64
+	LogID  int64
+	NodeID int64
+
 	NodeGUID string
 	PortGUID string
 	PortNum  int32
@@ -59,6 +78,9 @@ type Port struct {
 }
 
 type NodeInfo struct {
+	ID     int64
+	NodeID int64
+
 	NodeGUID string
 
 	SerialNumber string

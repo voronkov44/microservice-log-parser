@@ -4,7 +4,6 @@ import (
 	"context"
 	"log/slog"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/voronkov44/microservice-log-parser/log-services/app/core"
@@ -15,9 +14,9 @@ func NewGetTopologyHandler(log *slog.Logger, service core.TopologyViewer, timeou
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		logID, err := strconv.ParseInt(r.PathValue("log_id"), 10, 64)
-		if err != nil || logID <= 0 {
-			res.Json(w, errorResponse{Error: "invalid log_id"}, http.StatusBadRequest)
+		logID, err := parseInt64PathValue(r, "log_id")
+		if err != nil {
+			res.Json(w, errorResponse{Error: err.Error()}, httpStatusFromError(err))
 			return
 		}
 

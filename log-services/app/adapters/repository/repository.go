@@ -95,6 +95,61 @@ func (c *Client) FailLog(ctx context.Context, logID int64, errorText string) err
 	return nil
 }
 
+func (c *Client) GetLog(ctx context.Context, logID int64) (core.Log, error) {
+	resp, err := c.client.GetLog(ctx, &repositorypb.GetLogRequest{
+		LogId: logID,
+	})
+	if err != nil {
+		return core.Log{}, mapGRPCError(err)
+	}
+
+	return logFromProto(resp), nil
+}
+
+func (c *Client) GetNode(ctx context.Context, nodeID int64) (core.Node, error) {
+	resp, err := c.client.GetNode(ctx, &repositorypb.GetNodeRequest{
+		NodeId: nodeID,
+	})
+	if err != nil {
+		return core.Node{}, mapGRPCError(err)
+	}
+
+	return nodeFromProto(resp), nil
+}
+
+func (c *Client) GetPortsByNode(ctx context.Context, nodeID int64) ([]core.Port, error) {
+	resp, err := c.client.GetPortsByNode(ctx, &repositorypb.GetPortsByNodeRequest{
+		NodeId: nodeID,
+	})
+	if err != nil {
+		return nil, mapGRPCError(err)
+	}
+
+	return portsFromProto(resp.GetPorts()), nil
+}
+
+func (c *Client) GetNodesByLog(ctx context.Context, logID int64) ([]core.Node, error) {
+	resp, err := c.client.GetNodesByLog(ctx, &repositorypb.GetNodesByLogRequest{
+		LogId: logID,
+	})
+	if err != nil {
+		return nil, mapGRPCError(err)
+	}
+
+	return nodesFromProto(resp.GetNodes()), nil
+}
+
+func (c *Client) GetPortsByLog(ctx context.Context, logID int64) ([]core.Port, error) {
+	resp, err := c.client.GetPortsByLog(ctx, &repositorypb.GetPortsByLogRequest{
+		LogId: logID,
+	})
+	if err != nil {
+		return nil, mapGRPCError(err)
+	}
+
+	return portsFromProto(resp.GetPorts()), nil
+}
+
 func parsedLogToProto(in core.ParsedLog) *parserpb.ParsedLog {
 	nodes := make([]*parserpb.Node, 0, len(in.Nodes))
 	for _, node := range in.Nodes {
@@ -144,6 +199,125 @@ func parsedLogToProto(in core.ParsedLog) *parserpb.ParsedLog {
 		Nodes:     nodes,
 		Ports:     ports,
 		NodesInfo: nodesInfo,
+	}
+}
+
+func logFromProto(in *repositorypb.Log) core.Log {
+	if in == nil {
+		return core.Log{}
+	}
+
+	return core.Log{
+		ID:             in.GetId(),
+		FilePath:       in.GetFilePath(),
+		Status:         logStatusFromProto(in.GetStatus()),
+		NodesCount:     in.GetNodesCount(),
+		PortsCount:     in.GetPortsCount(),
+		Error:          in.GetError(),
+		UploadedAtUnix: in.GetUploadedAtUnix(),
+		ParsedAtUnix:   in.GetParsedAtUnix(),
+	}
+}
+
+func logStatusFromProto(status repositorypb.LogStatus) core.LogStatus {
+	switch status {
+	case repositorypb.LogStatus_LOG_STATUS_PROCESSING:
+		return core.LogStatusProcessing
+	case repositorypb.LogStatus_LOG_STATUS_PARSED:
+		return core.LogStatusParsed
+	case repositorypb.LogStatus_LOG_STATUS_FAILED:
+		return core.LogStatusFailed
+	default:
+		return ""
+	}
+}
+
+func nodesFromProto(in []*repositorypb.NodeDetails) []core.Node {
+	out := make([]core.Node, 0, len(in))
+
+	for _, node := range in {
+		if node == nil {
+			continue
+		}
+
+		out = append(out, nodeFromProto(node))
+	}
+
+	return out
+}
+
+func nodeFromProto(in *repositorypb.NodeDetails) core.Node {
+	if in == nil {
+		return core.Node{}
+	}
+
+	return core.Node{
+		ID:              in.GetId(),
+		LogID:           in.GetLogId(),
+		NodeGUID:        in.GetNodeGuid(),
+		NodeDesc:        in.GetNodeDesc(),
+		NodeType:        in.GetNodeType(),
+		NodeKind:        in.GetNodeKind(),
+		NumPorts:        in.GetNumPorts(),
+		ClassVersion:    in.GetClassVersion(),
+		BaseVersion:     in.GetBaseVersion(),
+		SystemImageGUID: in.GetSystemImageGuid(),
+		PortGUID:        in.GetPortGuid(),
+		Info:            nodeInfoFromProto(in.GetInfo()),
+		RawJSON:         in.GetRawJson(),
+	}
+}
+
+func nodeInfoFromProto(in *repositorypb.NodeInfo) *core.NodeInfo {
+	if in == nil {
+		return nil
+	}
+
+	return &core.NodeInfo{
+		ID:           in.GetId(),
+		NodeID:       in.GetNodeId(),
+		NodeGUID:     in.GetNodeGuid(),
+		SerialNumber: in.GetSerialNumber(),
+		PartNumber:   in.GetPartNumber(),
+		Revision:     in.GetRevision(),
+		ProductName:  in.GetProductName(),
+		RawJSON:      in.GetRawJson(),
+	}
+}
+
+func portsFromProto(in []*repositorypb.Port) []core.Port {
+	out := make([]core.Port, 0, len(in))
+
+	for _, port := range in {
+		if port == nil {
+			continue
+		}
+
+		out = append(out, portFromProto(port))
+	}
+
+	return out
+}
+
+func portFromProto(in *repositorypb.Port) core.Port {
+	if in == nil {
+		return core.Port{}
+	}
+
+	return core.Port{
+		ID:              in.GetId(),
+		LogID:           in.GetLogId(),
+		NodeID:          in.GetNodeId(),
+		NodeGUID:        in.GetNodeGuid(),
+		PortGUID:        in.GetPortGuid(),
+		PortNum:         in.GetPortNum(),
+		LID:             in.GetLid(),
+		LocalPortNum:    in.GetLocalPortNum(),
+		PortState:       in.GetPortState(),
+		PortPhyState:    in.GetPortPhyState(),
+		LinkWidthActive: in.GetLinkWidthActive(),
+		LinkSpeedActive: in.GetLinkSpeedActive(),
+		RawJSON:         in.GetRawJson(),
 	}
 }
 
