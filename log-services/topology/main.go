@@ -15,6 +15,7 @@ import (
 
 	topologypb "github.com/voronkov44/microservice-log-parser/log-services/proto/topology"
 	topologygrpc "github.com/voronkov44/microservice-log-parser/log-services/topology/adapters/grpc"
+	repositoryclient "github.com/voronkov44/microservice-log-parser/log-services/topology/adapters/repository"
 	"github.com/voronkov44/microservice-log-parser/log-services/topology/config"
 	"github.com/voronkov44/microservice-log-parser/log-services/topology/core"
 )
@@ -43,8 +44,14 @@ func run(cfg config.Config, log *slog.Logger) error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	repositoryClient, err := repositoryclient.NewClient(cfg.RepositoryAddress, log)
+	if err != nil {
+		return fmt.Errorf("failed to create repository client: %w", err)
+	}
+	defer closeClient(log, "repository", repositoryClient.Close)
+
 	// service
-	topology := core.NewService(log, cfg.RepositoryAddress)
+	topology := core.NewService(log, repositoryClient)
 
 	// grpc server
 	listener, err := net.Listen("tcp", cfg.Address)
@@ -67,6 +74,15 @@ func run(cfg config.Config, log *slog.Logger) error {
 	}
 
 	return nil
+}
+
+func closeClient(log *slog.Logger, name string, closeFn func() error) {
+	if err := closeFn(); err != nil {
+		log.Warn("failed to close grpc client",
+			"service", name,
+			"error", err,
+		)
+	}
 }
 
 func mustMakeLogger(levelStr string) *slog.Logger {

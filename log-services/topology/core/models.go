@@ -1,0 +1,109 @@
+package core
+
+type LogStatus string
+
+const (
+	LogStatusProcessing LogStatus = "processing"
+	LogStatusParsed     LogStatus = "parsed"
+	LogStatusFailed     LogStatus = "failed"
+)
+
+type Log struct {
+	ID             int64
+	FilePath       string
+	Status         LogStatus
+	NodesCount     int32
+	PortsCount     int32
+	Error          string
+	UploadedAtUnix int64
+	ParsedAtUnix   int64
+}
+
+type TopologyResult struct {
+	LogID   int64
+	Summary TopologySummary
+	Nodes   []TopologyNode
+	Groups  []TopologyGroup
+	Edges   []TopologyEdge
+}
+
+type TopologySummary struct {
+	NodesCount    int32
+	PortsCount    int32
+	EdgesCount    int32
+	HostsCount    int32
+	SwitchesCount int32
+}
+
+type TopologyNode struct {
+	ID    int64
+	LogID int64
+
+	NodeGUID string
+	NodeDesc string
+	NodeType int32
+	NodeKind string
+
+	DeclaredPortsCount int32
+	ParsedPortsCount   int32
+
+	SerialNumber string
+	ProductName  string
+}
+
+type TopologyGroup struct {
+	Name      string
+	Kind      string
+	NodeIDs   []int64
+	NodeGUIDs []string
+}
+
+type TopologyEdge struct {
+	SourceNodeID   int64
+	SourceNodeGUID string
+	SourcePortNum  int32
+	SourcePortGUID string
+
+	TargetNodeID   int64
+	TargetNodeGUID string
+	TargetPortNum  int32
+	TargetPortGUID string
+
+	Relation string
+
+	LinkWidthActive int32
+	LinkSpeedActive int32
+	PortState       int32
+}
+
+type Node struct {
+	ID    int64
+	LogID int64
+
+	NodeGUID string
+	NodeDesc string
+	NodeType int32
+	NodeKind string
+	NumPorts int32
+
+	Info *NodeInfo
+}
+
+type NodeInfo struct {
+	SerialNumber string
+	ProductName  string
+}
+
+type Port struct {
+	ID     int64
+	LogID  int64
+	NodeID int64
+
+	NodeGUID string
+	PortGUID string
+	PortNum  int32
+
+	PortState       int32
+	LinkWidthActive int32
+	LinkSpeedActive int32
+}
