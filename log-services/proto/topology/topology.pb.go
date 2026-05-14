@@ -69,9 +69,10 @@ func (x *GetTopologyRequest) GetLogId() int64 {
 type TopologyResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LogId         int64                  `protobuf:"varint,1,opt,name=log_id,json=logId,proto3" json:"log_id,omitempty"`
-	Nodes         []*TopologyNode        `protobuf:"bytes,2,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	Groups        []*TopologyGroup       `protobuf:"bytes,3,rep,name=groups,proto3" json:"groups,omitempty"`
-	Edges         []*TopologyEdge        `protobuf:"bytes,4,rep,name=edges,proto3" json:"edges,omitempty"`
+	Summary       *TopologySummary       `protobuf:"bytes,2,opt,name=summary,proto3" json:"summary,omitempty"`
+	Nodes         []*TopologyNode        `protobuf:"bytes,3,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	Groups        []*TopologyGroup       `protobuf:"bytes,4,rep,name=groups,proto3" json:"groups,omitempty"`
+	Edges         []*TopologyEdge        `protobuf:"bytes,5,rep,name=edges,proto3" json:"edges,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -113,6 +114,13 @@ func (x *TopologyResponse) GetLogId() int64 {
 	return 0
 }
 
+func (x *TopologyResponse) GetSummary() *TopologySummary {
+	if x != nil {
+		return x.Summary
+	}
+	return nil
+}
+
 func (x *TopologyResponse) GetNodes() []*TopologyNode {
 	if x != nil {
 		return x.Nodes
@@ -134,20 +142,101 @@ func (x *TopologyResponse) GetEdges() []*TopologyEdge {
 	return nil
 }
 
-type TopologyNode struct {
+type TopologySummary struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	NodeGuid      string                 `protobuf:"bytes,2,opt,name=node_guid,json=nodeGuid,proto3" json:"node_guid,omitempty"`
-	NodeDesc      string                 `protobuf:"bytes,3,opt,name=node_desc,json=nodeDesc,proto3" json:"node_desc,omitempty"`
-	NodeKind      string                 `protobuf:"bytes,4,opt,name=node_kind,json=nodeKind,proto3" json:"node_kind,omitempty"`
-	PortsCount    int32                  `protobuf:"varint,5,opt,name=ports_count,json=portsCount,proto3" json:"ports_count,omitempty"`
+	NodesCount    int32                  `protobuf:"varint,1,opt,name=nodes_count,json=nodesCount,proto3" json:"nodes_count,omitempty"`
+	PortsCount    int32                  `protobuf:"varint,2,opt,name=ports_count,json=portsCount,proto3" json:"ports_count,omitempty"`
+	EdgesCount    int32                  `protobuf:"varint,3,opt,name=edges_count,json=edgesCount,proto3" json:"edges_count,omitempty"`
+	HostsCount    int32                  `protobuf:"varint,4,opt,name=hosts_count,json=hostsCount,proto3" json:"hosts_count,omitempty"`
+	SwitchesCount int32                  `protobuf:"varint,5,opt,name=switches_count,json=switchesCount,proto3" json:"switches_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
+func (x *TopologySummary) Reset() {
+	*x = TopologySummary{}
+	mi := &file_topology_topology_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TopologySummary) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TopologySummary) ProtoMessage() {}
+
+func (x *TopologySummary) ProtoReflect() protoreflect.Message {
+	mi := &file_topology_topology_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TopologySummary.ProtoReflect.Descriptor instead.
+func (*TopologySummary) Descriptor() ([]byte, []int) {
+	return file_topology_topology_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *TopologySummary) GetNodesCount() int32 {
+	if x != nil {
+		return x.NodesCount
+	}
+	return 0
+}
+
+func (x *TopologySummary) GetPortsCount() int32 {
+	if x != nil {
+		return x.PortsCount
+	}
+	return 0
+}
+
+func (x *TopologySummary) GetEdgesCount() int32 {
+	if x != nil {
+		return x.EdgesCount
+	}
+	return 0
+}
+
+func (x *TopologySummary) GetHostsCount() int32 {
+	if x != nil {
+		return x.HostsCount
+	}
+	return 0
+}
+
+func (x *TopologySummary) GetSwitchesCount() int32 {
+	if x != nil {
+		return x.SwitchesCount
+	}
+	return 0
+}
+
+type TopologyNode struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Id                 int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	LogId              int64                  `protobuf:"varint,2,opt,name=log_id,json=logId,proto3" json:"log_id,omitempty"`
+	NodeGuid           string                 `protobuf:"bytes,3,opt,name=node_guid,json=nodeGuid,proto3" json:"node_guid,omitempty"`
+	NodeDesc           string                 `protobuf:"bytes,4,opt,name=node_desc,json=nodeDesc,proto3" json:"node_desc,omitempty"`
+	NodeType           int32                  `protobuf:"varint,5,opt,name=node_type,json=nodeType,proto3" json:"node_type,omitempty"`
+	NodeKind           string                 `protobuf:"bytes,6,opt,name=node_kind,json=nodeKind,proto3" json:"node_kind,omitempty"`
+	DeclaredPortsCount int32                  `protobuf:"varint,7,opt,name=declared_ports_count,json=declaredPortsCount,proto3" json:"declared_ports_count,omitempty"`
+	ParsedPortsCount   int32                  `protobuf:"varint,8,opt,name=parsed_ports_count,json=parsedPortsCount,proto3" json:"parsed_ports_count,omitempty"`
+	SerialNumber       string                 `protobuf:"bytes,9,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number,omitempty"`
+	ProductName        string                 `protobuf:"bytes,10,opt,name=product_name,json=productName,proto3" json:"product_name,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
 func (x *TopologyNode) Reset() {
 	*x = TopologyNode{}
-	mi := &file_topology_topology_proto_msgTypes[2]
+	mi := &file_topology_topology_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -159,7 +248,7 @@ func (x *TopologyNode) String() string {
 func (*TopologyNode) ProtoMessage() {}
 
 func (x *TopologyNode) ProtoReflect() protoreflect.Message {
-	mi := &file_topology_topology_proto_msgTypes[2]
+	mi := &file_topology_topology_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -172,12 +261,19 @@ func (x *TopologyNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyNode.ProtoReflect.Descriptor instead.
 func (*TopologyNode) Descriptor() ([]byte, []int) {
-	return file_topology_topology_proto_rawDescGZIP(), []int{2}
+	return file_topology_topology_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *TopologyNode) GetId() int64 {
 	if x != nil {
 		return x.Id
+	}
+	return 0
+}
+
+func (x *TopologyNode) GetLogId() int64 {
+	if x != nil {
+		return x.LogId
 	}
 	return 0
 }
@@ -196,6 +292,13 @@ func (x *TopologyNode) GetNodeDesc() string {
 	return ""
 }
 
+func (x *TopologyNode) GetNodeType() int32 {
+	if x != nil {
+		return x.NodeType
+	}
+	return 0
+}
+
 func (x *TopologyNode) GetNodeKind() string {
 	if x != nil {
 		return x.NodeKind
@@ -203,25 +306,47 @@ func (x *TopologyNode) GetNodeKind() string {
 	return ""
 }
 
-func (x *TopologyNode) GetPortsCount() int32 {
+func (x *TopologyNode) GetDeclaredPortsCount() int32 {
 	if x != nil {
-		return x.PortsCount
+		return x.DeclaredPortsCount
 	}
 	return 0
+}
+
+func (x *TopologyNode) GetParsedPortsCount() int32 {
+	if x != nil {
+		return x.ParsedPortsCount
+	}
+	return 0
+}
+
+func (x *TopologyNode) GetSerialNumber() string {
+	if x != nil {
+		return x.SerialNumber
+	}
+	return ""
+}
+
+func (x *TopologyNode) GetProductName() string {
+	if x != nil {
+		return x.ProductName
+	}
+	return ""
 }
 
 type TopologyGroup struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Kind          string                 `protobuf:"bytes,2,opt,name=kind,proto3" json:"kind,omitempty"`
-	Nodes         []*TopologyNode        `protobuf:"bytes,3,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	NodeIds       []int64                `protobuf:"varint,3,rep,packed,name=node_ids,json=nodeIds,proto3" json:"node_ids,omitempty"`
+	NodeGuids     []string               `protobuf:"bytes,4,rep,name=node_guids,json=nodeGuids,proto3" json:"node_guids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *TopologyGroup) Reset() {
 	*x = TopologyGroup{}
-	mi := &file_topology_topology_proto_msgTypes[3]
+	mi := &file_topology_topology_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -233,7 +358,7 @@ func (x *TopologyGroup) String() string {
 func (*TopologyGroup) ProtoMessage() {}
 
 func (x *TopologyGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_topology_topology_proto_msgTypes[3]
+	mi := &file_topology_topology_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +371,7 @@ func (x *TopologyGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyGroup.ProtoReflect.Descriptor instead.
 func (*TopologyGroup) Descriptor() ([]byte, []int) {
-	return file_topology_topology_proto_rawDescGZIP(), []int{3}
+	return file_topology_topology_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *TopologyGroup) GetName() string {
@@ -263,27 +388,41 @@ func (x *TopologyGroup) GetKind() string {
 	return ""
 }
 
-func (x *TopologyGroup) GetNodes() []*TopologyNode {
+func (x *TopologyGroup) GetNodeIds() []int64 {
 	if x != nil {
-		return x.Nodes
+		return x.NodeIds
+	}
+	return nil
+}
+
+func (x *TopologyGroup) GetNodeGuids() []string {
+	if x != nil {
+		return x.NodeGuids
 	}
 	return nil
 }
 
 type TopologyEdge struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	SourceNodeGuid string                 `protobuf:"bytes,1,opt,name=source_node_guid,json=sourceNodeGuid,proto3" json:"source_node_guid,omitempty"`
-	SourcePortGuid string                 `protobuf:"bytes,2,opt,name=source_port_guid,json=sourcePortGuid,proto3" json:"source_port_guid,omitempty"`
-	TargetNodeGuid string                 `protobuf:"bytes,3,opt,name=target_node_guid,json=targetNodeGuid,proto3" json:"target_node_guid,omitempty"`
-	TargetPortGuid string                 `protobuf:"bytes,4,opt,name=target_port_guid,json=targetPortGuid,proto3" json:"target_port_guid,omitempty"`
-	Relation       string                 `protobuf:"bytes,5,opt,name=relation,proto3" json:"relation,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	SourceNodeId    int64                  `protobuf:"varint,1,opt,name=source_node_id,json=sourceNodeId,proto3" json:"source_node_id,omitempty"`
+	SourceNodeGuid  string                 `protobuf:"bytes,2,opt,name=source_node_guid,json=sourceNodeGuid,proto3" json:"source_node_guid,omitempty"`
+	SourcePortNum   int32                  `protobuf:"varint,3,opt,name=source_port_num,json=sourcePortNum,proto3" json:"source_port_num,omitempty"`
+	SourcePortGuid  string                 `protobuf:"bytes,4,opt,name=source_port_guid,json=sourcePortGuid,proto3" json:"source_port_guid,omitempty"`
+	TargetNodeId    int64                  `protobuf:"varint,5,opt,name=target_node_id,json=targetNodeId,proto3" json:"target_node_id,omitempty"`
+	TargetNodeGuid  string                 `protobuf:"bytes,6,opt,name=target_node_guid,json=targetNodeGuid,proto3" json:"target_node_guid,omitempty"`
+	TargetPortNum   int32                  `protobuf:"varint,7,opt,name=target_port_num,json=targetPortNum,proto3" json:"target_port_num,omitempty"`
+	TargetPortGuid  string                 `protobuf:"bytes,8,opt,name=target_port_guid,json=targetPortGuid,proto3" json:"target_port_guid,omitempty"`
+	Relation        string                 `protobuf:"bytes,9,opt,name=relation,proto3" json:"relation,omitempty"`
+	LinkWidthActive int32                  `protobuf:"varint,10,opt,name=link_width_active,json=linkWidthActive,proto3" json:"link_width_active,omitempty"`
+	LinkSpeedActive int32                  `protobuf:"varint,11,opt,name=link_speed_active,json=linkSpeedActive,proto3" json:"link_speed_active,omitempty"`
+	PortState       int32                  `protobuf:"varint,12,opt,name=port_state,json=portState,proto3" json:"port_state,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *TopologyEdge) Reset() {
 	*x = TopologyEdge{}
-	mi := &file_topology_topology_proto_msgTypes[4]
+	mi := &file_topology_topology_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -295,7 +434,7 @@ func (x *TopologyEdge) String() string {
 func (*TopologyEdge) ProtoMessage() {}
 
 func (x *TopologyEdge) ProtoReflect() protoreflect.Message {
-	mi := &file_topology_topology_proto_msgTypes[4]
+	mi := &file_topology_topology_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +447,14 @@ func (x *TopologyEdge) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TopologyEdge.ProtoReflect.Descriptor instead.
 func (*TopologyEdge) Descriptor() ([]byte, []int) {
-	return file_topology_topology_proto_rawDescGZIP(), []int{4}
+	return file_topology_topology_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *TopologyEdge) GetSourceNodeId() int64 {
+	if x != nil {
+		return x.SourceNodeId
+	}
+	return 0
 }
 
 func (x *TopologyEdge) GetSourceNodeGuid() string {
@@ -318,6 +464,13 @@ func (x *TopologyEdge) GetSourceNodeGuid() string {
 	return ""
 }
 
+func (x *TopologyEdge) GetSourcePortNum() int32 {
+	if x != nil {
+		return x.SourcePortNum
+	}
+	return 0
+}
+
 func (x *TopologyEdge) GetSourcePortGuid() string {
 	if x != nil {
 		return x.SourcePortGuid
@@ -325,11 +478,25 @@ func (x *TopologyEdge) GetSourcePortGuid() string {
 	return ""
 }
 
+func (x *TopologyEdge) GetTargetNodeId() int64 {
+	if x != nil {
+		return x.TargetNodeId
+	}
+	return 0
+}
+
 func (x *TopologyEdge) GetTargetNodeGuid() string {
 	if x != nil {
 		return x.TargetNodeGuid
 	}
 	return ""
+}
+
+func (x *TopologyEdge) GetTargetPortNum() int32 {
+	if x != nil {
+		return x.TargetPortNum
+	}
+	return 0
 }
 
 func (x *TopologyEdge) GetTargetPortGuid() string {
@@ -346,35 +513,83 @@ func (x *TopologyEdge) GetRelation() string {
 	return ""
 }
 
+func (x *TopologyEdge) GetLinkWidthActive() int32 {
+	if x != nil {
+		return x.LinkWidthActive
+	}
+	return 0
+}
+
+func (x *TopologyEdge) GetLinkSpeedActive() int32 {
+	if x != nil {
+		return x.LinkSpeedActive
+	}
+	return 0
+}
+
+func (x *TopologyEdge) GetPortState() int32 {
+	if x != nil {
+		return x.PortState
+	}
+	return 0
+}
+
 var File_topology_topology_proto protoreflect.FileDescriptor
 
 const file_topology_topology_proto_rawDesc = "" +
 	"\n" +
 	"\x17topology/topology.proto\x12\btopology\x1a\x1bgoogle/protobuf/empty.proto\"+\n" +
 	"\x12GetTopologyRequest\x12\x15\n" +
-	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\xb6\x01\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\xeb\x01\n" +
 	"\x10TopologyResponse\x12\x15\n" +
-	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x12,\n" +
-	"\x05nodes\x18\x02 \x03(\v2\x16.topology.TopologyNodeR\x05nodes\x12/\n" +
-	"\x06groups\x18\x03 \x03(\v2\x17.topology.TopologyGroupR\x06groups\x12,\n" +
-	"\x05edges\x18\x04 \x03(\v2\x16.topology.TopologyEdgeR\x05edges\"\x96\x01\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x123\n" +
+	"\asummary\x18\x02 \x01(\v2\x19.topology.TopologySummaryR\asummary\x12,\n" +
+	"\x05nodes\x18\x03 \x03(\v2\x16.topology.TopologyNodeR\x05nodes\x12/\n" +
+	"\x06groups\x18\x04 \x03(\v2\x17.topology.TopologyGroupR\x06groups\x12,\n" +
+	"\x05edges\x18\x05 \x03(\v2\x16.topology.TopologyEdgeR\x05edges\"\xbc\x01\n" +
+	"\x0fTopologySummary\x12\x1f\n" +
+	"\vnodes_count\x18\x01 \x01(\x05R\n" +
+	"nodesCount\x12\x1f\n" +
+	"\vports_count\x18\x02 \x01(\x05R\n" +
+	"portsCount\x12\x1f\n" +
+	"\vedges_count\x18\x03 \x01(\x05R\n" +
+	"edgesCount\x12\x1f\n" +
+	"\vhosts_count\x18\x04 \x01(\x05R\n" +
+	"hostsCount\x12%\n" +
+	"\x0eswitches_count\x18\x05 \x01(\x05R\rswitchesCount\"\xd1\x02\n" +
 	"\fTopologyNode\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
-	"\tnode_guid\x18\x02 \x01(\tR\bnodeGuid\x12\x1b\n" +
-	"\tnode_desc\x18\x03 \x01(\tR\bnodeDesc\x12\x1b\n" +
-	"\tnode_kind\x18\x04 \x01(\tR\bnodeKind\x12\x1f\n" +
-	"\vports_count\x18\x05 \x01(\x05R\n" +
-	"portsCount\"e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x15\n" +
+	"\x06log_id\x18\x02 \x01(\x03R\x05logId\x12\x1b\n" +
+	"\tnode_guid\x18\x03 \x01(\tR\bnodeGuid\x12\x1b\n" +
+	"\tnode_desc\x18\x04 \x01(\tR\bnodeDesc\x12\x1b\n" +
+	"\tnode_type\x18\x05 \x01(\x05R\bnodeType\x12\x1b\n" +
+	"\tnode_kind\x18\x06 \x01(\tR\bnodeKind\x120\n" +
+	"\x14declared_ports_count\x18\a \x01(\x05R\x12declaredPortsCount\x12,\n" +
+	"\x12parsed_ports_count\x18\b \x01(\x05R\x10parsedPortsCount\x12#\n" +
+	"\rserial_number\x18\t \x01(\tR\fserialNumber\x12!\n" +
+	"\fproduct_name\x18\n" +
+	" \x01(\tR\vproductName\"q\n" +
 	"\rTopologyGroup\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x12\n" +
-	"\x04kind\x18\x02 \x01(\tR\x04kind\x12,\n" +
-	"\x05nodes\x18\x03 \x03(\v2\x16.topology.TopologyNodeR\x05nodes\"\xd2\x01\n" +
-	"\fTopologyEdge\x12(\n" +
-	"\x10source_node_guid\x18\x01 \x01(\tR\x0esourceNodeGuid\x12(\n" +
-	"\x10source_port_guid\x18\x02 \x01(\tR\x0esourcePortGuid\x12(\n" +
-	"\x10target_node_guid\x18\x03 \x01(\tR\x0etargetNodeGuid\x12(\n" +
-	"\x10target_port_guid\x18\x04 \x01(\tR\x0etargetPortGuid\x12\x1a\n" +
-	"\brelation\x18\x05 \x01(\tR\brelation2\x8b\x01\n" +
+	"\x04kind\x18\x02 \x01(\tR\x04kind\x12\x19\n" +
+	"\bnode_ids\x18\x03 \x03(\x03R\anodeIds\x12\x1d\n" +
+	"\n" +
+	"node_guids\x18\x04 \x03(\tR\tnodeGuids\"\xe5\x03\n" +
+	"\fTopologyEdge\x12$\n" +
+	"\x0esource_node_id\x18\x01 \x01(\x03R\fsourceNodeId\x12(\n" +
+	"\x10source_node_guid\x18\x02 \x01(\tR\x0esourceNodeGuid\x12&\n" +
+	"\x0fsource_port_num\x18\x03 \x01(\x05R\rsourcePortNum\x12(\n" +
+	"\x10source_port_guid\x18\x04 \x01(\tR\x0esourcePortGuid\x12$\n" +
+	"\x0etarget_node_id\x18\x05 \x01(\x03R\ftargetNodeId\x12(\n" +
+	"\x10target_node_guid\x18\x06 \x01(\tR\x0etargetNodeGuid\x12&\n" +
+	"\x0ftarget_port_num\x18\a \x01(\x05R\rtargetPortNum\x12(\n" +
+	"\x10target_port_guid\x18\b \x01(\tR\x0etargetPortGuid\x12\x1a\n" +
+	"\brelation\x18\t \x01(\tR\brelation\x12*\n" +
+	"\x11link_width_active\x18\n" +
+	" \x01(\x05R\x0flinkWidthActive\x12*\n" +
+	"\x11link_speed_active\x18\v \x01(\x05R\x0flinkSpeedActive\x12\x1d\n" +
+	"\n" +
+	"port_state\x18\f \x01(\x05R\tportState2\x8b\x01\n" +
 	"\bTopology\x126\n" +
 	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\x12G\n" +
 	"\vGetTopology\x12\x1c.topology.GetTopologyRequest\x1a\x1a.topology.TopologyResponseBKZIgithub.com/voronkov44/microservice-log-parser/log-services/proto/topologyb\x06proto3"
@@ -391,23 +606,24 @@ func file_topology_topology_proto_rawDescGZIP() []byte {
 	return file_topology_topology_proto_rawDescData
 }
 
-var file_topology_topology_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_topology_topology_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_topology_topology_proto_goTypes = []any{
 	(*GetTopologyRequest)(nil), // 0: topology.GetTopologyRequest
 	(*TopologyResponse)(nil),   // 1: topology.TopologyResponse
-	(*TopologyNode)(nil),       // 2: topology.TopologyNode
-	(*TopologyGroup)(nil),      // 3: topology.TopologyGroup
-	(*TopologyEdge)(nil),       // 4: topology.TopologyEdge
-	(*emptypb.Empty)(nil),      // 5: google.protobuf.Empty
+	(*TopologySummary)(nil),    // 2: topology.TopologySummary
+	(*TopologyNode)(nil),       // 3: topology.TopologyNode
+	(*TopologyGroup)(nil),      // 4: topology.TopologyGroup
+	(*TopologyEdge)(nil),       // 5: topology.TopologyEdge
+	(*emptypb.Empty)(nil),      // 6: google.protobuf.Empty
 }
 var file_topology_topology_proto_depIdxs = []int32{
-	2, // 0: topology.TopologyResponse.nodes:type_name -> topology.TopologyNode
-	3, // 1: topology.TopologyResponse.groups:type_name -> topology.TopologyGroup
-	4, // 2: topology.TopologyResponse.edges:type_name -> topology.TopologyEdge
-	2, // 3: topology.TopologyGroup.nodes:type_name -> topology.TopologyNode
-	5, // 4: topology.Topology.Ping:input_type -> google.protobuf.Empty
+	2, // 0: topology.TopologyResponse.summary:type_name -> topology.TopologySummary
+	3, // 1: topology.TopologyResponse.nodes:type_name -> topology.TopologyNode
+	4, // 2: topology.TopologyResponse.groups:type_name -> topology.TopologyGroup
+	5, // 3: topology.TopologyResponse.edges:type_name -> topology.TopologyEdge
+	6, // 4: topology.Topology.Ping:input_type -> google.protobuf.Empty
 	0, // 5: topology.Topology.GetTopology:input_type -> topology.GetTopologyRequest
-	5, // 6: topology.Topology.Ping:output_type -> google.protobuf.Empty
+	6, // 6: topology.Topology.Ping:output_type -> google.protobuf.Empty
 	1, // 7: topology.Topology.GetTopology:output_type -> topology.TopologyResponse
 	6, // [6:8] is the sub-list for method output_type
 	4, // [4:6] is the sub-list for method input_type
@@ -427,7 +643,7 @@ func file_topology_topology_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_topology_topology_proto_rawDesc), len(file_topology_topology_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

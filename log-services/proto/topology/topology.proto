@@ -17,29 +17,58 @@ message GetTopologyRequest {
 
 message TopologyResponse {
   int64 log_id = 1;
-  repeated TopologyNode nodes = 2;
-  repeated TopologyGroup groups = 3;
-  repeated TopologyEdge edges = 4;
+  TopologySummary summary = 2;
+  repeated TopologyNode nodes = 3;
+  repeated TopologyGroup groups = 4;
+  repeated TopologyEdge edges = 5;
+}
+
+message TopologySummary {
+  int32 nodes_count = 1;
+  int32 ports_count = 2;
+  int32 edges_count = 3;
+  int32 hosts_count = 4;
+  int32 switches_count = 5;
 }
 
 message TopologyNode {
   int64 id = 1;
-  string node_guid = 2;
-  string node_desc = 3;
-  string node_kind = 4;
-  int32 ports_count = 5;
+  int64 log_id = 2;
+
+  string node_guid = 3;
+  string node_desc = 4;
+  int32 node_type = 5;
+  string node_kind = 6;
+
+  int32 declared_ports_count = 7;
+  int32 parsed_ports_count = 8;
+
+  string serial_number = 9;
+  string product_name = 10;
 }
 
 message TopologyGroup {
   string name = 1;
   string kind = 2;
-  repeated TopologyNode nodes = 3;
+
+  repeated int64 node_ids = 3;
+  repeated string node_guids = 4;
 }
 
 message TopologyEdge {
-  string source_node_guid = 1;
-  string source_port_guid = 2;
-  string target_node_guid = 3;
-  string target_port_guid = 4;
-  string relation = 5;
+  int64 source_node_id = 1;
+  string source_node_guid = 2;
+  int32 source_port_num = 3;
+  string source_port_guid = 4;
+
+  int64 target_node_id = 5;
+  string target_node_guid = 6;
+  int32 target_port_num = 7;
+  string target_port_guid = 8;
+
+  string relation = 9;
+
+  int32 link_width_active = 10;
+  int32 link_speed_active = 11;
+  int32 port_state = 12;
 }
