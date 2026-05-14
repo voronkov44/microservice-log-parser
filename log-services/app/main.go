@@ -71,8 +71,13 @@ func run(cfg config.Config, log *slog.Logger) error {
 		"topology":   topologyClient,
 	}
 
+	// Service
+	appService := core.NewService(log, repositoryClient, parserClient)
+
+	// Route
 	router := http.NewServeMux()
 	router.Handle("GET /healthz", rest.NewHealthHandler(log, pingers, cfg.HTTPConfig.Timeout))
+	router.Handle("POST /logs/parse", rest.NewParseLogHandler(log, appService, cfg.HTTPConfig.Timeout))
 
 	stack := middleware.Chain(
 		middleware.Recover(log),
