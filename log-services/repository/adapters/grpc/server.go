@@ -226,14 +226,14 @@ func parsedLogFromProto(in *parserpb.ParsedLog) (core.ParsedLog, error) {
 
 func logToProto(in core.Log) *repositorypb.Log {
 	return &repositorypb.Log{
-		Id:             in.ID,
-		FilePath:       in.FilePath,
-		Status:         logStatusToProto(in.Status),
-		NodesCount:     in.NodesCount,
-		PortsCount:     in.PortsCount,
-		Error:          in.Error,
-		UploadedAtUnix: in.UploadedAtUnix,
-		ParsedAtUnix:   in.ParsedAtUnix,
+		Id:         in.ID,
+		FilePath:   in.FilePath,
+		Status:     logStatusToProto(in.Status),
+		NodesCount: in.NodesCount,
+		PortsCount: in.PortsCount,
+		Error:      in.Error,
+		UploadedAt: in.UploadedAt,
+		ParsedAt:   in.ParsedAt,
 	}
 }
 

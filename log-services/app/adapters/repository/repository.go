@@ -208,14 +208,14 @@ func logFromProto(in *repositorypb.Log) core.Log {
 	}
 
 	return core.Log{
-		ID:             in.GetId(),
-		FilePath:       in.GetFilePath(),
-		Status:         logStatusFromProto(in.GetStatus()),
-		NodesCount:     in.GetNodesCount(),
-		PortsCount:     in.GetPortsCount(),
-		Error:          in.GetError(),
-		UploadedAtUnix: in.GetUploadedAtUnix(),
-		ParsedAtUnix:   in.GetParsedAtUnix(),
+		ID:         in.GetId(),
+		FilePath:   in.GetFilePath(),
+		Status:     logStatusFromProto(in.GetStatus()),
+		NodesCount: in.GetNodesCount(),
+		PortsCount: in.GetPortsCount(),
+		Error:      in.GetError(),
+		UploadedAt: in.GetUploadedAt(),
+		ParsedAt:   in.GetParsedAt(),
 	}
 }
 

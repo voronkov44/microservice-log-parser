@@ -489,21 +489,25 @@ type logRow struct {
 }
 
 func (r logRow) toCore() core.Log {
-	var parsedAtUnix int64
+	var parsedAt string
 	if r.ParsedAt.Valid {
-		parsedAtUnix = r.ParsedAt.Time.Unix()
+		parsedAt = formatTimestamp(r.ParsedAt.Time)
 	}
 
 	return core.Log{
-		ID:             r.ID,
-		FilePath:       r.FilePath,
-		Status:         core.LogStatus(r.Status),
-		NodesCount:     r.NodesCount,
-		PortsCount:     r.PortsCount,
-		Error:          r.Error,
-		UploadedAtUnix: r.UploadedAt.Unix(),
-		ParsedAtUnix:   parsedAtUnix,
+		ID:         r.ID,
+		FilePath:   r.FilePath,
+		Status:     core.LogStatus(r.Status),
+		NodesCount: r.NodesCount,
+		PortsCount: r.PortsCount,
+		Error:      r.Error,
+		UploadedAt: formatTimestamp(r.UploadedAt),
+		ParsedAt:   parsedAt,
 	}
+}
+
+func formatTimestamp(t time.Time) string {
+	return t.UTC().Format(time.RFC3339)
 }
 
 type nodeRow struct {

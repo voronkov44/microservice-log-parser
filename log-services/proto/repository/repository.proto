@@ -64,8 +64,8 @@ message Log {
   int32 nodes_count = 4;
   int32 ports_count = 5;
   string error = 6;
-  int64 uploaded_at_unix = 7;
-  int64 parsed_at_unix = 8;
+  string uploaded_at = 7;
+  string parsed_at = 8;
 }
 
 message GetNodeRequest {

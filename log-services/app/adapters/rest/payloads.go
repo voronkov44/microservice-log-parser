@@ -72,14 +72,14 @@ type topologyEdgeResponse struct {
 }
 
 type storedLogResponse struct {
-	ID             int64  `json:"id"`
-	FilePath       string `json:"file_path"`
-	Status         string `json:"status"`
-	NodesCount     int32  `json:"nodes_count"`
-	PortsCount     int32  `json:"ports_count"`
-	Error          string `json:"error,omitempty"`
-	UploadedAtUnix int64  `json:"uploaded_at_unix"`
-	ParsedAtUnix   int64  `json:"parsed_at_unix,omitempty"`
+	ID         int64  `json:"id"`
+	FilePath   string `json:"file_path"`
+	Status     string `json:"status"`
+	NodesCount int32  `json:"nodes_count"`
+	PortsCount int32  `json:"ports_count"`
+	Error      string `json:"error,omitempty"`
+	UploadedAt string `json:"uploaded_at"`
+	ParsedAt   string `json:"parsed_at,omitempty"`
 }
 
 type storedNodesResponse struct {

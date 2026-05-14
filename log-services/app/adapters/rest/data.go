@@ -192,14 +192,14 @@ func parseInt64PathValue(r *http.Request, name string) (int64, error) {
 
 func storedLogToResponse(in core.Log) storedLogResponse {
 	return storedLogResponse{
-		ID:             in.ID,
-		FilePath:       in.FilePath,
-		Status:         string(in.Status),
-		NodesCount:     in.NodesCount,
-		PortsCount:     in.PortsCount,
-		Error:          in.Error,
-		UploadedAtUnix: in.UploadedAtUnix,
-		ParsedAtUnix:   in.ParsedAtUnix,
+		ID:         in.ID,
+		FilePath:   in.FilePath,
+		Status:     string(in.Status),
+		NodesCount: in.NodesCount,
+		PortsCount: in.PortsCount,
+		Error:      in.Error,
+		UploadedAt: in.UploadedAt,
+		ParsedAt:   in.ParsedAt,
 	}
 }
 

@@ -372,17 +372,17 @@ func (x *GetLogRequest) GetLogId() int64 {
 }
 
 type Log struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	FilePath       string                 `protobuf:"bytes,2,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
-	Status         LogStatus              `protobuf:"varint,3,opt,name=status,proto3,enum=repository.LogStatus" json:"status,omitempty"`
-	NodesCount     int32                  `protobuf:"varint,4,opt,name=nodes_count,json=nodesCount,proto3" json:"nodes_count,omitempty"`
-	PortsCount     int32                  `protobuf:"varint,5,opt,name=ports_count,json=portsCount,proto3" json:"ports_count,omitempty"`
-	Error          string                 `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
-	UploadedAtUnix int64                  `protobuf:"varint,7,opt,name=uploaded_at_unix,json=uploadedAtUnix,proto3" json:"uploaded_at_unix,omitempty"`
-	ParsedAtUnix   int64                  `protobuf:"varint,8,opt,name=parsed_at_unix,json=parsedAtUnix,proto3" json:"parsed_at_unix,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	FilePath      string                 `protobuf:"bytes,2,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
+	Status        LogStatus              `protobuf:"varint,3,opt,name=status,proto3,enum=repository.LogStatus" json:"status,omitempty"`
+	NodesCount    int32                  `protobuf:"varint,4,opt,name=nodes_count,json=nodesCount,proto3" json:"nodes_count,omitempty"`
+	PortsCount    int32                  `protobuf:"varint,5,opt,name=ports_count,json=portsCount,proto3" json:"ports_count,omitempty"`
+	Error         string                 `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
+	UploadedAt    string                 `protobuf:"bytes,7,opt,name=uploaded_at,json=uploadedAt,proto3" json:"uploaded_at,omitempty"`
+	ParsedAt      string                 `protobuf:"bytes,8,opt,name=parsed_at,json=parsedAt,proto3" json:"parsed_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Log) Reset() {
@@ -457,18 +457,18 @@ func (x *Log) GetError() string {
 	return ""
 }
 
-func (x *Log) GetUploadedAtUnix() int64 {
+func (x *Log) GetUploadedAt() string {
 	if x != nil {
-		return x.UploadedAtUnix
+		return x.UploadedAt
 	}
-	return 0
+	return ""
 }
 
-func (x *Log) GetParsedAtUnix() int64 {
+func (x *Log) GetParsedAt() string {
 	if x != nil {
-		return x.ParsedAtUnix
+		return x.ParsedAt
 	}
-	return 0
+	return ""
 }
 
 type GetNodeRequest struct {
@@ -1139,7 +1139,7 @@ const file_repository_repository_proto_rawDesc = "" +
 	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x12\x14\n" +
 	"\x05error\x18\x02 \x01(\tR\x05error\"&\n" +
 	"\rGetLogRequest\x12\x15\n" +
-	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\x89\x02\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\xf7\x01\n" +
 	"\x03Log\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
 	"\tfile_path\x18\x02 \x01(\tR\bfilePath\x12-\n" +
@@ -1148,9 +1148,10 @@ const file_repository_repository_proto_rawDesc = "" +
 	"nodesCount\x12\x1f\n" +
 	"\vports_count\x18\x05 \x01(\x05R\n" +
 	"portsCount\x12\x14\n" +
-	"\x05error\x18\x06 \x01(\tR\x05error\x12(\n" +
-	"\x10uploaded_at_unix\x18\a \x01(\x03R\x0euploadedAtUnix\x12$\n" +
-	"\x0eparsed_at_unix\x18\b \x01(\x03R\fparsedAtUnix\")\n" +
+	"\x05error\x18\x06 \x01(\tR\x05error\x12\x1f\n" +
+	"\vuploaded_at\x18\a \x01(\tR\n" +
+	"uploadedAt\x12\x1b\n" +
+	"\tparsed_at\x18\b \x01(\tR\bparsedAt\")\n" +
 	"\x0eGetNodeRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\x03R\x06nodeId\"0\n" +
 	"\x15GetPortsByNodeRequest\x12\x17\n" +

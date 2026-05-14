@@ -9,14 +9,14 @@ const (
 )
 
 type Log struct {
-	ID             int64
-	FilePath       string
-	Status         LogStatus
-	NodesCount     int32
-	PortsCount     int32
-	Error          string
-	UploadedAtUnix int64
-	ParsedAtUnix   int64
+	ID         int64
+	FilePath   string
+	Status     LogStatus
+	NodesCount int32
+	PortsCount int32
+	Error      string
+	UploadedAt string
+	ParsedAt   string
 }
 
 type TopologyResult struct {
