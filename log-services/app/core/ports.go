@@ -19,6 +19,15 @@ type Repository interface {
 	FailLog(ctx context.Context, logID int64, errorText string) error
 }
 
+type TopologyProvider interface {
+	Pinger
+	GetTopology(ctx context.Context, logID int64) (Topology, error)
+}
+
 type LogParser interface {
 	ParseLog(ctx context.Context, path string) (ParseLogResult, error)
+}
+
+type TopologyViewer interface {
+	GetTopology(ctx context.Context, logID int64) (Topology, error)
 }

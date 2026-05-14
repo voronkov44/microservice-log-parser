@@ -72,12 +72,13 @@ func run(cfg config.Config, log *slog.Logger) error {
 	}
 
 	// Service
-	appService := core.NewService(log, repositoryClient, parserClient)
+	appService := core.NewService(log, repositoryClient, parserClient, topologyClient)
 
 	// Route
 	router := http.NewServeMux()
 	router.Handle("GET /healthz", rest.NewHealthHandler(log, pingers, cfg.HTTPConfig.Timeout))
 	router.Handle("POST /logs/parse", rest.NewParseLogHandler(log, appService, cfg.HTTPConfig.Timeout))
+	router.Handle("GET /logs/{log_id}/topology", rest.NewGetTopologyHandler(log, appService, cfg.HTTPConfig.Timeout))
 
 	stack := middleware.Chain(
 		middleware.Recover(log),

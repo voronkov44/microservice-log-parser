@@ -10,13 +10,15 @@ type Service struct {
 	log        *slog.Logger
 	repository Repository
 	parser     Parser
+	topology   TopologyProvider
 }
 
-func NewService(log *slog.Logger, repository Repository, parser Parser) *Service {
+func NewService(log *slog.Logger, repository Repository, parser Parser, topology TopologyProvider) *Service {
 	return &Service{
 		log:        log,
 		repository: repository,
 		parser:     parser,
+		topology:   topology,
 	}
 }
 
@@ -64,4 +66,12 @@ func (s *Service) failLog(ctx context.Context, logID int64, cause error) {
 			"fail_error", err,
 		)
 	}
+}
+
+func (s *Service) GetTopology(ctx context.Context, logID int64) (Topology, error) {
+	if logID <= 0 {
+		return Topology{}, ErrBadArguments
+	}
+
+	return s.topology.GetTopology(ctx, logID)
 }
