@@ -41,6 +41,7 @@ services:
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
       PARSER_ADDRESS: :8080
+      DATA_DIR: /data
 
   repository:
     image: log-parser-repository:latest

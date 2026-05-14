@@ -1,2 +1,3 @@
 log_level: DEBUG
 parser_address: localhost:8081
+data_dir: ../data

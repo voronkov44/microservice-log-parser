@@ -16,6 +16,7 @@ import (
 	parsergrpc "github.com/voronkov44/microservice-log-parser/log-services/parser/adapters/grpc"
 	"github.com/voronkov44/microservice-log-parser/log-services/parser/config"
 	"github.com/voronkov44/microservice-log-parser/log-services/parser/core"
+	logparser "github.com/voronkov44/microservice-log-parser/log-services/parser/parser"
 	parserpb "github.com/voronkov44/microservice-log-parser/log-services/proto/parser"
 )
 
@@ -34,14 +35,20 @@ func main() {
 }
 
 func run(cfg config.Config, log *slog.Logger) error {
-	log.Info("starting parser server", "address", cfg.Address)
+	log.Info("starting parser server",
+		"address", cfg.Address,
+		"data_dir", cfg.DataDir,
+	)
 	log.Debug("debug messages are enabled")
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	// parser engine
+	engine := logparser.New(cfg.DataDir, log)
+
 	// service
-	parser := core.NewService(log)
+	parser := core.NewService(log, engine)
 
 	// grpc server
 	listener, err := net.Listen("tcp", cfg.Address)
