@@ -1,0 +1,225 @@
+type: spec.insomnia.rest/5.0
+schema_version: "5.1"
+name: Microservice Log Parser API
+meta:
+  id: wrk_fbb8ea1bd35f49b08b7ee959678141e5
+  created: 1778822226684
+  modified: 1778822226684
+  description: ""
+collection:
+  - url: "{{ _.base_url }}/healthz"
+    name: 01 Healthcheck
+    meta:
+      id: req_2f10aa9a85d145de986cef06b378e9cd
+      created: 1778651619259
+      modified: 1778822243971
+      isPrivate: false
+      description: Checks app and internal service availability.
+      sortKey: -1000000
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/api/v1/parse"
+    name: 02 Parse log archive
+    meta:
+      id: req_981a2cbb0c394cbd80a2e47b86c90ef0
+      created: 1778768017877
+      modified: 1778805184261
+      isPrivate: false
+      description: Creates a log record, parses archive from data/, saves parsed data,
+        and returns log_id.
+      sortKey: -999999
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"path": "log.zip"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/api/v1/topology/{{ _.log_id }}"
+    name: 04 Get topology by log ID
+    meta:
+      id: req_ae33d6fb0add487e9f1dd94320cb5bf5
+      created: 1778770590971
+      modified: 1778820746017
+      isPrivate: false
+      description: Returns topology summary, nodes, groups, and inferred edges for
+        parsed log.
+      sortKey: -999997
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/api/v1/log/{{ _.log_id }}"
+    name: 03 Get log metadata by ID
+    meta:
+      id: req_17750b4ead9a4db1b34b66b641590562
+      created: 1778790910739
+      modified: 1778820769210
+      isPrivate: false
+      description: Returns log status, file path, counters, and timestamps.
+      sortKey: -999998
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/api/v1/log/{{ _.log_id }}/nodes"
+    name: "07 Extra: get nodes by log ID"
+    meta:
+      id: req_a345b39b640149d5aa026968a5dd3429
+      created: 1778790941340
+      modified: 1778820777913
+      isPrivate: false
+      description: "Extra endpoint: returns all nodes for a parsed log."
+      sortKey: -999994
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/api/v1/log/{{ _.log_id }}/ports?limit=20&offset=0"
+    name: "08 Extra: get ports by log ID"
+    meta:
+      id: req_6b0fbdf1d8574885a990378d36c92557
+      created: 1778791149897
+      modified: 1778820785273
+      isPrivate: false
+      description: "Extra endpoint: returns paginated ports for a parsed log."
+      sortKey: -999993
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/api/v1/node/{{ _.node_id }}"
+    name: 05 Get node details by ID
+    meta:
+      id: req_5039799c09a84d9d9bf9d6077a9739ed
+      created: 1778791188341
+      modified: 1778822379388
+      isPrivate: false
+      description: Returns detailed information about one parsed node.
+      sortKey: -999996
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.base_url }}/api/v1/port/{{ _.node_id }}"
+    name: 06 Get node ports by node ID
+    meta:
+      id: req_c1809e9f058146e9a1a9d0c481109a52
+      created: 1778791245003
+      modified: 1778820804905
+      isPrivate: false
+      description: Returns ports for a specific node.
+      sortKey: -999995
+    method: GET
+    headers:
+      - name: User-Agent
+        value: insomnia/12.5.0
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_df1a8c74650d4133b077183273e66ea7
+    created: 1778651611007
+    modified: 1778651611007
+environments:
+  name: Base Environment
+  meta:
+    id: env_18dff5dd26c74c03a98eb7e013066d00
+    created: 1778651611007
+    modified: 1778651611007
+    isPrivate: false
+  data:
+    base_url: http://localhost:8080
+    log_id: 1
+    node_id: 1
+spec:
+  meta:
+    id: spc_6fc0f959e0cc42b38d29ca2df18fffa1
+    created: 1778822226731
+    modified: 1778822410335
