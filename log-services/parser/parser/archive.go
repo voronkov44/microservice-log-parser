@@ -113,7 +113,9 @@ func readZip(ctx context.Context, path string) ([]sourceFile, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open zip: %w", err)
 	}
-	defer reader.Close()
+	defer func() {
+		_ = reader.Close()
+	}()
 
 	files := make([]sourceFile, 0, len(reader.File))
 
@@ -164,7 +166,9 @@ func readTar(ctx context.Context, path string, gzipped bool) ([]sourceFile, erro
 	if err != nil {
 		return nil, fmt.Errorf("open tar: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	var reader io.Reader = file
 
@@ -173,7 +177,9 @@ func readTar(ctx context.Context, path string, gzipped bool) ([]sourceFile, erro
 		if err != nil {
 			return nil, fmt.Errorf("open gzip tar: %w", err)
 		}
-		defer gzReader.Close()
+		defer func() {
+			_ = gzReader.Close()
+		}()
 
 		reader = gzReader
 	}
@@ -233,13 +239,17 @@ func readGzip(ctx context.Context, path string) ([]sourceFile, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open gzip: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	gzReader, err := gzip.NewReader(file)
 	if err != nil {
 		return nil, fmt.Errorf("open gzip reader: %w", err)
 	}
-	defer gzReader.Close()
+	defer func() {
+		_ = gzReader.Close()
+	}()
 
 	data, err := io.ReadAll(io.LimitReader(gzReader, maxFileSize+1))
 	if err != nil {

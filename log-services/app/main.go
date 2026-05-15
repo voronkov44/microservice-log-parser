@@ -33,11 +33,18 @@ func main() {
 		fmt.Printf("failed to init logger: %v\n", err)
 		os.Exit(1)
 	}
-	defer cleanup()
+
+	exitCode := 0
 
 	if err := run(cfg, log); err != nil {
 		log.Error("app server failed", "error", err)
-		os.Exit(1)
+		exitCode = 1
+	}
+
+	cleanup()
+
+	if exitCode != 0 {
+		os.Exit(exitCode)
 	}
 }
 

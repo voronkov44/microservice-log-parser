@@ -5,7 +5,9 @@ package repository;
 import "google/protobuf/empty.proto";
 import "parser/parser.proto";
 
-option go_package = "github.com/voronkov44/microservice-log-parser/log-services/proto/repository";
+option go_package =
+    "github.com/voronkov44/microservice-log-parser/log-services/proto/"
+    "repository";
 
 service Repository {
   rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);

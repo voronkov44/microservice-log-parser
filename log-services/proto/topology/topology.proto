@@ -4,7 +4,8 @@ package topology;
 
 import "google/protobuf/empty.proto";
 
-option go_package = "github.com/voronkov44/microservice-log-parser/log-services/proto/topology";
+option go_package =
+    "github.com/voronkov44/microservice-log-parser/log-services/proto/topology";
 
 service Topology {
   rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
