@@ -78,16 +78,18 @@ func run(cfg config.Config, log *slog.Logger) error {
 	router := http.NewServeMux()
 	router.Handle("GET /healthz", rest.NewHealthHandler(log, pingers, cfg.HTTPConfig.Timeout))
 
-	router.Handle("POST /logs/parse", rest.NewParseLogHandler(log, appService, cfg.HTTPConfig.Timeout))
+	router.Handle("POST /api/v1/parse", rest.NewParseLogHandler(log, appService, cfg.HTTPConfig.Timeout))
 
-	router.Handle("GET /logs/{log_id}", rest.NewGetLogHandler(log, appService, cfg.HTTPConfig.Timeout))
-	router.Handle("GET /logs/{log_id}/nodes", rest.NewGetNodesByLogHandler(log, appService, cfg.HTTPConfig.Timeout))
-	router.Handle("GET /logs/{log_id}/ports", rest.NewGetPortsByLogHandler(log, appService, cfg.HTTPConfig.Timeout))
+	router.Handle("GET /api/v1/log/{log_id}", rest.NewGetLogHandler(log, appService, cfg.HTTPConfig.Timeout))
 
-	router.Handle("GET /nodes/{node_id}", rest.NewGetNodeHandler(log, appService, cfg.HTTPConfig.Timeout))
-	router.Handle("GET /nodes/{node_id}/ports", rest.NewGetPortsByNodeHandler(log, appService, cfg.HTTPConfig.Timeout))
+	router.Handle("GET /api/v1/node/{node_id}", rest.NewGetNodeHandler(log, appService, cfg.HTTPConfig.Timeout))
+	router.Handle("GET /api/v1/port/{node_id}", rest.NewGetPortsByNodeHandler(log, appService, cfg.HTTPConfig.Timeout))
 
-	router.Handle("GET /logs/{log_id}/topology", rest.NewGetTopologyHandler(log, appService, cfg.HTTPConfig.Timeout))
+	router.Handle("GET /api/v1/topology/{log_id}", rest.NewGetTopologyHandler(log, appService, cfg.HTTPConfig.Timeout))
+
+	// extra api endpoints
+	router.Handle("GET /api/v1/log/{log_id}/nodes", rest.NewGetNodesByLogHandler(log, appService, cfg.HTTPConfig.Timeout))
+	router.Handle("GET /api/v1/log/{log_id}/ports", rest.NewGetPortsByLogHandler(log, appService, cfg.HTTPConfig.Timeout))
 
 	stack := middleware.Chain(
 		middleware.Recover(log),
