@@ -2,8 +2,8 @@ package rest
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"github.com/voronkov44/microservice-log-parser/log-services/app/pkg/req"
 	"log/slog"
 	"net/http"
 	"time"
@@ -16,9 +16,8 @@ func NewParseLogHandler(log *slog.Logger, service core.LogParser, timeout time.D
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		var payload parseLogRequest
-		if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
-			res.Json(w, errorResponse{Error: "invalid json body"}, http.StatusBadRequest)
+		payload, err := req.HandleBody[parseLogRequest](w, r)
+		if err != nil {
 			return
 		}
 
