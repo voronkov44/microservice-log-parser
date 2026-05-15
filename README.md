@@ -1159,4 +1159,4 @@ make -C log-services tidy
 - структурные логи через `slog`;
 - Docker Compose для локального запуска;
 - unit, smoke/e2e tests и lint;
-- topology response с groups, summary и inferred edges.
+
