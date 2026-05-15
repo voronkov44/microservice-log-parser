@@ -1,4 +1,4 @@
-.PHONY: lint protobuf protolint golint fmt tidy test
+.PHONY: lint protobuf protolint golint fmt tidy test test-unit test-integration
 
 lint: protolint golint
 
@@ -29,3 +29,9 @@ tidy:
 
 test:
 	go test ./...
+
+test-unit:
+	go test ./...
+
+test-integration:
+	go test -tags=integration ./repository/adapters/db
