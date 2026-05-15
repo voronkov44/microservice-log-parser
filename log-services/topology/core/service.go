@@ -107,9 +107,7 @@ func (s *Service) GetTopology(ctx context.Context, logID int64) (TopologyResult,
 	}
 
 	groups := groupsFromMap(groupsByKind)
-
-	// пока что пустой
-	edges := make([]TopologyEdge, 0)
+	edges := buildEdges(nodes, ports)
 
 	result := TopologyResult{
 		LogID: logID,
@@ -137,6 +135,204 @@ func (s *Service) GetTopology(ctx context.Context, logID int64) (TopologyResult,
 	return result, nil
 }
 
+func buildEdges(nodes []Node, ports []Port) []TopologyEdge {
+	nodesByID := make(map[int64]Node, len(nodes))
+	nodesByKind := make(map[string][]Node)
+
+	for _, node := range nodes {
+		kind := normalizeKind(node.NodeKind)
+
+		nodesByID[node.ID] = node
+		nodesByKind[kind] = append(nodesByKind[kind], node)
+	}
+
+	hostPorts := activePortsForKinds(ports, nodesByID, map[string]bool{
+		"host": true,
+	})
+
+	switchPorts := activePortsForKinds(ports, nodesByID, map[string]bool{
+		"switch": true,
+	})
+
+	sortPorts(hostPorts)
+	sortPorts(switchPorts)
+
+	edges := make([]TopologyEdge, 0)
+	usedSwitchPorts := make(map[int64]bool)
+
+	for _, hostPort := range hostPorts {
+		switchPort, ok := pickSwitchPort(hostPort, switchPorts, usedSwitchPorts)
+		if !ok {
+			continue
+		}
+
+		sourceNode := nodesByID[hostPort.NodeID]
+		targetNode := nodesByID[switchPort.NodeID]
+
+		edges = append(edges, TopologyEdge{
+			SourceNodeID:    sourceNode.ID,
+			SourceNodeGUID:  sourceNode.NodeGUID,
+			SourcePortNum:   hostPort.PortNum,
+			SourcePortGUID:  hostPort.PortGUID,
+			TargetNodeID:    targetNode.ID,
+			TargetNodeGUID:  targetNode.NodeGUID,
+			TargetPortNum:   switchPort.PortNum,
+			TargetPortGUID:  switchPort.PortGUID,
+			Relation:        "inferred_host_switch",
+			LinkWidthActive: hostPort.LinkWidthActive,
+			LinkSpeedActive: hostPort.LinkSpeedActive,
+			PortState:       hostPort.PortState,
+		})
+
+		usedSwitchPorts[switchPort.ID] = true
+	}
+
+	switches := nodesByKind["switch"]
+	sort.Slice(switches, func(i, j int) bool {
+		return switches[i].ID < switches[j].ID
+	})
+
+	portsByNodeID := groupPortsByNodeID(switchPorts)
+
+	for i := 0; i+1 < len(switches); i++ {
+		sourceNode := switches[i]
+		targetNode := switches[i+1]
+
+		sourcePort, ok := firstUnusedPort(portsByNodeID[sourceNode.ID], usedSwitchPorts)
+		if !ok {
+			continue
+		}
+
+		usedSwitchPorts[sourcePort.ID] = true
+
+		targetPort, ok := firstUnusedPort(portsByNodeID[targetNode.ID], usedSwitchPorts)
+		if !ok {
+			continue
+		}
+
+		usedSwitchPorts[targetPort.ID] = true
+
+		edges = append(edges, TopologyEdge{
+			SourceNodeID:    sourceNode.ID,
+			SourceNodeGUID:  sourceNode.NodeGUID,
+			SourcePortNum:   sourcePort.PortNum,
+			SourcePortGUID:  sourcePort.PortGUID,
+			TargetNodeID:    targetNode.ID,
+			TargetNodeGUID:  targetNode.NodeGUID,
+			TargetPortNum:   targetPort.PortNum,
+			TargetPortGUID:  targetPort.PortGUID,
+			Relation:        "inferred_switch_backbone",
+			LinkWidthActive: sourcePort.LinkWidthActive,
+			LinkSpeedActive: sourcePort.LinkSpeedActive,
+			PortState:       sourcePort.PortState,
+		})
+	}
+
+	return edges
+}
+
+func activePortsForKinds(ports []Port, nodesByID map[int64]Node, allowedKinds map[string]bool) []Port {
+	out := make([]Port, 0)
+
+	for _, port := range ports {
+		if !isActivePort(port) {
+			continue
+		}
+
+		node, ok := nodesByID[port.NodeID]
+		if !ok {
+			continue
+		}
+
+		kind := normalizeKind(node.NodeKind)
+		if !allowedKinds[kind] {
+			continue
+		}
+
+		out = append(out, port)
+	}
+
+	return out
+}
+
+func isActivePort(port Port) bool {
+	return port.ID > 0 &&
+		port.NodeID > 0 &&
+		port.PortNum > 0 &&
+		port.PortState == 4
+}
+
+func sortPorts(ports []Port) {
+	sort.Slice(ports, func(i, j int) bool {
+		if ports[i].NodeID != ports[j].NodeID {
+			return ports[i].NodeID < ports[j].NodeID
+		}
+
+		if ports[i].PortNum != ports[j].PortNum {
+			return ports[i].PortNum < ports[j].PortNum
+		}
+
+		return ports[i].ID < ports[j].ID
+	})
+}
+
+func pickSwitchPort(hostPort Port, switchPorts []Port, used map[int64]bool) (Port, bool) {
+	for _, switchPort := range switchPorts {
+		if used[switchPort.ID] {
+			continue
+		}
+
+		if sameLinkCharacteristics(hostPort, switchPort) {
+			return switchPort, true
+		}
+	}
+
+	for _, switchPort := range switchPorts {
+		if !used[switchPort.ID] {
+			return switchPort, true
+		}
+	}
+
+	return Port{}, false
+}
+
+func sameLinkCharacteristics(a Port, b Port) bool {
+	if a.LinkWidthActive == 0 || b.LinkWidthActive == 0 {
+		return false
+	}
+
+	if a.LinkSpeedActive == 0 || b.LinkSpeedActive == 0 {
+		return false
+	}
+
+	return a.LinkWidthActive == b.LinkWidthActive &&
+		a.LinkSpeedActive == b.LinkSpeedActive
+}
+
+func groupPortsByNodeID(ports []Port) map[int64][]Port {
+	out := make(map[int64][]Port)
+
+	for _, port := range ports {
+		out[port.NodeID] = append(out[port.NodeID], port)
+	}
+
+	for nodeID := range out {
+		sortPorts(out[nodeID])
+	}
+
+	return out
+}
+
+func firstUnusedPort(ports []Port, used map[int64]bool) (Port, bool) {
+	for _, port := range ports {
+		if !used[port.ID] {
+			return port, true
+		}
+	}
+
+	return Port{}, false
+}
+
 func normalizeKind(kind string) string {
 	kind = strings.ToLower(strings.TrimSpace(kind))
 	if kind == "" {
@@ -155,8 +351,17 @@ func groupName(kind string) string {
 	case "unknown":
 		return "Unknown"
 	default:
-		return strings.Title(kind)
+		return title(kind)
 	}
+}
+
+func title(value string) string {
+	value = strings.TrimSpace(value)
+	if value == "" {
+		return value
+	}
+
+	return strings.ToUpper(value[:1]) + value[1:]
 }
 
 func groupsFromMap(in map[string]*TopologyGroup) []TopologyGroup {
