@@ -138,6 +138,8 @@ func grpcError(err error) error {
 		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, core.ErrNotFound):
 		return status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, core.ErrLogNotParsed):
+		return status.Error(codes.FailedPrecondition, err.Error())
 	case errors.Is(err, core.ErrUnavailable):
 		return status.Error(codes.Unavailable, err.Error())
 	default:

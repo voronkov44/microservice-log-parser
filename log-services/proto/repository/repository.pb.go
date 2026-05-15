@@ -7,10 +7,10 @@
 package repository
 
 import (
-	parser "github.com/voronkov44/microservice-log-parser/log-services/proto/parser"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -166,7 +166,7 @@ func (x *CreateLogResponse) GetLogId() int64 {
 type SaveParsedLogRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LogId         int64                  `protobuf:"varint,1,opt,name=log_id,json=logId,proto3" json:"log_id,omitempty"`
-	ParsedLog     *parser.ParsedLog      `protobuf:"bytes,2,opt,name=parsed_log,json=parsedLog,proto3" json:"parsed_log,omitempty"`
+	ParsedLog     *ParsedLog             `protobuf:"bytes,2,opt,name=parsed_log,json=parsedLog,proto3" json:"parsed_log,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -208,7 +208,7 @@ func (x *SaveParsedLogRequest) GetLogId() int64 {
 	return 0
 }
 
-func (x *SaveParsedLogRequest) GetParsedLog() *parser.ParsedLog {
+func (x *SaveParsedLogRequest) GetParsedLog() *ParsedLog {
 	if x != nil {
 		return x.ParsedLog
 	}
@@ -327,6 +327,382 @@ func (x *FailLogRequest) GetError() string {
 	return ""
 }
 
+type ParsedLog struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Nodes         []*ParsedNode          `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	Ports         []*ParsedPort          `protobuf:"bytes,2,rep,name=ports,proto3" json:"ports,omitempty"`
+	NodesInfo     []*ParsedNodeInfo      `protobuf:"bytes,3,rep,name=nodes_info,json=nodesInfo,proto3" json:"nodes_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ParsedLog) Reset() {
+	*x = ParsedLog{}
+	mi := &file_repository_repository_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParsedLog) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParsedLog) ProtoMessage() {}
+
+func (x *ParsedLog) ProtoReflect() protoreflect.Message {
+	mi := &file_repository_repository_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParsedLog.ProtoReflect.Descriptor instead.
+func (*ParsedLog) Descriptor() ([]byte, []int) {
+	return file_repository_repository_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ParsedLog) GetNodes() []*ParsedNode {
+	if x != nil {
+		return x.Nodes
+	}
+	return nil
+}
+
+func (x *ParsedLog) GetPorts() []*ParsedPort {
+	if x != nil {
+		return x.Ports
+	}
+	return nil
+}
+
+func (x *ParsedLog) GetNodesInfo() []*ParsedNodeInfo {
+	if x != nil {
+		return x.NodesInfo
+	}
+	return nil
+}
+
+type ParsedNode struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	NodeGuid        string                 `protobuf:"bytes,1,opt,name=node_guid,json=nodeGuid,proto3" json:"node_guid,omitempty"`
+	NodeDesc        string                 `protobuf:"bytes,2,opt,name=node_desc,json=nodeDesc,proto3" json:"node_desc,omitempty"`
+	NodeType        int32                  `protobuf:"varint,3,opt,name=node_type,json=nodeType,proto3" json:"node_type,omitempty"`
+	NodeKind        string                 `protobuf:"bytes,4,opt,name=node_kind,json=nodeKind,proto3" json:"node_kind,omitempty"`
+	NumPorts        int32                  `protobuf:"varint,5,opt,name=num_ports,json=numPorts,proto3" json:"num_ports,omitempty"`
+	ClassVersion    int32                  `protobuf:"varint,6,opt,name=class_version,json=classVersion,proto3" json:"class_version,omitempty"`
+	BaseVersion     int32                  `protobuf:"varint,7,opt,name=base_version,json=baseVersion,proto3" json:"base_version,omitempty"`
+	SystemImageGuid string                 `protobuf:"bytes,8,opt,name=system_image_guid,json=systemImageGuid,proto3" json:"system_image_guid,omitempty"`
+	PortGuid        string                 `protobuf:"bytes,9,opt,name=port_guid,json=portGuid,proto3" json:"port_guid,omitempty"`
+	RawJson         string                 `protobuf:"bytes,10,opt,name=raw_json,json=rawJson,proto3" json:"raw_json,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ParsedNode) Reset() {
+	*x = ParsedNode{}
+	mi := &file_repository_repository_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParsedNode) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParsedNode) ProtoMessage() {}
+
+func (x *ParsedNode) ProtoReflect() protoreflect.Message {
+	mi := &file_repository_repository_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParsedNode.ProtoReflect.Descriptor instead.
+func (*ParsedNode) Descriptor() ([]byte, []int) {
+	return file_repository_repository_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ParsedNode) GetNodeGuid() string {
+	if x != nil {
+		return x.NodeGuid
+	}
+	return ""
+}
+
+func (x *ParsedNode) GetNodeDesc() string {
+	if x != nil {
+		return x.NodeDesc
+	}
+	return ""
+}
+
+func (x *ParsedNode) GetNodeType() int32 {
+	if x != nil {
+		return x.NodeType
+	}
+	return 0
+}
+
+func (x *ParsedNode) GetNodeKind() string {
+	if x != nil {
+		return x.NodeKind
+	}
+	return ""
+}
+
+func (x *ParsedNode) GetNumPorts() int32 {
+	if x != nil {
+		return x.NumPorts
+	}
+	return 0
+}
+
+func (x *ParsedNode) GetClassVersion() int32 {
+	if x != nil {
+		return x.ClassVersion
+	}
+	return 0
+}
+
+func (x *ParsedNode) GetBaseVersion() int32 {
+	if x != nil {
+		return x.BaseVersion
+	}
+	return 0
+}
+
+func (x *ParsedNode) GetSystemImageGuid() string {
+	if x != nil {
+		return x.SystemImageGuid
+	}
+	return ""
+}
+
+func (x *ParsedNode) GetPortGuid() string {
+	if x != nil {
+		return x.PortGuid
+	}
+	return ""
+}
+
+func (x *ParsedNode) GetRawJson() string {
+	if x != nil {
+		return x.RawJson
+	}
+	return ""
+}
+
+type ParsedPort struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	NodeGuid        string                 `protobuf:"bytes,1,opt,name=node_guid,json=nodeGuid,proto3" json:"node_guid,omitempty"`
+	PortGuid        string                 `protobuf:"bytes,2,opt,name=port_guid,json=portGuid,proto3" json:"port_guid,omitempty"`
+	PortNum         int32                  `protobuf:"varint,3,opt,name=port_num,json=portNum,proto3" json:"port_num,omitempty"`
+	Lid             int32                  `protobuf:"varint,4,opt,name=lid,proto3" json:"lid,omitempty"`
+	LocalPortNum    int32                  `protobuf:"varint,5,opt,name=local_port_num,json=localPortNum,proto3" json:"local_port_num,omitempty"`
+	PortState       int32                  `protobuf:"varint,6,opt,name=port_state,json=portState,proto3" json:"port_state,omitempty"`
+	PortPhyState    int32                  `protobuf:"varint,7,opt,name=port_phy_state,json=portPhyState,proto3" json:"port_phy_state,omitempty"`
+	LinkWidthActive int32                  `protobuf:"varint,8,opt,name=link_width_active,json=linkWidthActive,proto3" json:"link_width_active,omitempty"`
+	LinkSpeedActive int32                  `protobuf:"varint,9,opt,name=link_speed_active,json=linkSpeedActive,proto3" json:"link_speed_active,omitempty"`
+	RawJson         string                 `protobuf:"bytes,10,opt,name=raw_json,json=rawJson,proto3" json:"raw_json,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ParsedPort) Reset() {
+	*x = ParsedPort{}
+	mi := &file_repository_repository_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParsedPort) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParsedPort) ProtoMessage() {}
+
+func (x *ParsedPort) ProtoReflect() protoreflect.Message {
+	mi := &file_repository_repository_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParsedPort.ProtoReflect.Descriptor instead.
+func (*ParsedPort) Descriptor() ([]byte, []int) {
+	return file_repository_repository_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ParsedPort) GetNodeGuid() string {
+	if x != nil {
+		return x.NodeGuid
+	}
+	return ""
+}
+
+func (x *ParsedPort) GetPortGuid() string {
+	if x != nil {
+		return x.PortGuid
+	}
+	return ""
+}
+
+func (x *ParsedPort) GetPortNum() int32 {
+	if x != nil {
+		return x.PortNum
+	}
+	return 0
+}
+
+func (x *ParsedPort) GetLid() int32 {
+	if x != nil {
+		return x.Lid
+	}
+	return 0
+}
+
+func (x *ParsedPort) GetLocalPortNum() int32 {
+	if x != nil {
+		return x.LocalPortNum
+	}
+	return 0
+}
+
+func (x *ParsedPort) GetPortState() int32 {
+	if x != nil {
+		return x.PortState
+	}
+	return 0
+}
+
+func (x *ParsedPort) GetPortPhyState() int32 {
+	if x != nil {
+		return x.PortPhyState
+	}
+	return 0
+}
+
+func (x *ParsedPort) GetLinkWidthActive() int32 {
+	if x != nil {
+		return x.LinkWidthActive
+	}
+	return 0
+}
+
+func (x *ParsedPort) GetLinkSpeedActive() int32 {
+	if x != nil {
+		return x.LinkSpeedActive
+	}
+	return 0
+}
+
+func (x *ParsedPort) GetRawJson() string {
+	if x != nil {
+		return x.RawJson
+	}
+	return ""
+}
+
+type ParsedNodeInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	NodeGuid      string                 `protobuf:"bytes,1,opt,name=node_guid,json=nodeGuid,proto3" json:"node_guid,omitempty"`
+	SerialNumber  string                 `protobuf:"bytes,2,opt,name=serial_number,json=serialNumber,proto3" json:"serial_number,omitempty"`
+	PartNumber    string                 `protobuf:"bytes,3,opt,name=part_number,json=partNumber,proto3" json:"part_number,omitempty"`
+	Revision      string                 `protobuf:"bytes,4,opt,name=revision,proto3" json:"revision,omitempty"`
+	ProductName   string                 `protobuf:"bytes,5,opt,name=product_name,json=productName,proto3" json:"product_name,omitempty"`
+	RawJson       string                 `protobuf:"bytes,6,opt,name=raw_json,json=rawJson,proto3" json:"raw_json,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ParsedNodeInfo) Reset() {
+	*x = ParsedNodeInfo{}
+	mi := &file_repository_repository_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParsedNodeInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParsedNodeInfo) ProtoMessage() {}
+
+func (x *ParsedNodeInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_repository_repository_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParsedNodeInfo.ProtoReflect.Descriptor instead.
+func (*ParsedNodeInfo) Descriptor() ([]byte, []int) {
+	return file_repository_repository_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ParsedNodeInfo) GetNodeGuid() string {
+	if x != nil {
+		return x.NodeGuid
+	}
+	return ""
+}
+
+func (x *ParsedNodeInfo) GetSerialNumber() string {
+	if x != nil {
+		return x.SerialNumber
+	}
+	return ""
+}
+
+func (x *ParsedNodeInfo) GetPartNumber() string {
+	if x != nil {
+		return x.PartNumber
+	}
+	return ""
+}
+
+func (x *ParsedNodeInfo) GetRevision() string {
+	if x != nil {
+		return x.Revision
+	}
+	return ""
+}
+
+func (x *ParsedNodeInfo) GetProductName() string {
+	if x != nil {
+		return x.ProductName
+	}
+	return ""
+}
+
+func (x *ParsedNodeInfo) GetRawJson() string {
+	if x != nil {
+		return x.RawJson
+	}
+	return ""
+}
+
 type GetLogRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LogId         int64                  `protobuf:"varint,1,opt,name=log_id,json=logId,proto3" json:"log_id,omitempty"`
@@ -336,7 +712,7 @@ type GetLogRequest struct {
 
 func (x *GetLogRequest) Reset() {
 	*x = GetLogRequest{}
-	mi := &file_repository_repository_proto_msgTypes[5]
+	mi := &file_repository_repository_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -348,7 +724,7 @@ func (x *GetLogRequest) String() string {
 func (*GetLogRequest) ProtoMessage() {}
 
 func (x *GetLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[5]
+	mi := &file_repository_repository_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -361,7 +737,7 @@ func (x *GetLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLogRequest.ProtoReflect.Descriptor instead.
 func (*GetLogRequest) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{5}
+	return file_repository_repository_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetLogRequest) GetLogId() int64 {
@@ -379,15 +755,15 @@ type Log struct {
 	NodesCount    int32                  `protobuf:"varint,4,opt,name=nodes_count,json=nodesCount,proto3" json:"nodes_count,omitempty"`
 	PortsCount    int32                  `protobuf:"varint,5,opt,name=ports_count,json=portsCount,proto3" json:"ports_count,omitempty"`
 	Error         string                 `protobuf:"bytes,6,opt,name=error,proto3" json:"error,omitempty"`
-	UploadedAt    string                 `protobuf:"bytes,7,opt,name=uploaded_at,json=uploadedAt,proto3" json:"uploaded_at,omitempty"`
-	ParsedAt      string                 `protobuf:"bytes,8,opt,name=parsed_at,json=parsedAt,proto3" json:"parsed_at,omitempty"`
+	UploadedAt    *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=uploaded_at,json=uploadedAt,proto3" json:"uploaded_at,omitempty"`
+	ParsedAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=parsed_at,json=parsedAt,proto3" json:"parsed_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Log) Reset() {
 	*x = Log{}
-	mi := &file_repository_repository_proto_msgTypes[6]
+	mi := &file_repository_repository_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -399,7 +775,7 @@ func (x *Log) String() string {
 func (*Log) ProtoMessage() {}
 
 func (x *Log) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[6]
+	mi := &file_repository_repository_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +788,7 @@ func (x *Log) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Log.ProtoReflect.Descriptor instead.
 func (*Log) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{6}
+	return file_repository_repository_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Log) GetId() int64 {
@@ -457,18 +833,18 @@ func (x *Log) GetError() string {
 	return ""
 }
 
-func (x *Log) GetUploadedAt() string {
+func (x *Log) GetUploadedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UploadedAt
 	}
-	return ""
+	return nil
 }
 
-func (x *Log) GetParsedAt() string {
+func (x *Log) GetParsedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.ParsedAt
 	}
-	return ""
+	return nil
 }
 
 type GetNodeRequest struct {
@@ -480,7 +856,7 @@ type GetNodeRequest struct {
 
 func (x *GetNodeRequest) Reset() {
 	*x = GetNodeRequest{}
-	mi := &file_repository_repository_proto_msgTypes[7]
+	mi := &file_repository_repository_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -492,7 +868,7 @@ func (x *GetNodeRequest) String() string {
 func (*GetNodeRequest) ProtoMessage() {}
 
 func (x *GetNodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[7]
+	mi := &file_repository_repository_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -505,7 +881,7 @@ func (x *GetNodeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNodeRequest.ProtoReflect.Descriptor instead.
 func (*GetNodeRequest) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{7}
+	return file_repository_repository_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetNodeRequest) GetNodeId() int64 {
@@ -524,7 +900,7 @@ type GetPortsByNodeRequest struct {
 
 func (x *GetPortsByNodeRequest) Reset() {
 	*x = GetPortsByNodeRequest{}
-	mi := &file_repository_repository_proto_msgTypes[8]
+	mi := &file_repository_repository_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -536,7 +912,7 @@ func (x *GetPortsByNodeRequest) String() string {
 func (*GetPortsByNodeRequest) ProtoMessage() {}
 
 func (x *GetPortsByNodeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[8]
+	mi := &file_repository_repository_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -549,7 +925,7 @@ func (x *GetPortsByNodeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortsByNodeRequest.ProtoReflect.Descriptor instead.
 func (*GetPortsByNodeRequest) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{8}
+	return file_repository_repository_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPortsByNodeRequest) GetNodeId() int64 {
@@ -568,7 +944,7 @@ type GetNodesByLogRequest struct {
 
 func (x *GetNodesByLogRequest) Reset() {
 	*x = GetNodesByLogRequest{}
-	mi := &file_repository_repository_proto_msgTypes[9]
+	mi := &file_repository_repository_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -580,7 +956,7 @@ func (x *GetNodesByLogRequest) String() string {
 func (*GetNodesByLogRequest) ProtoMessage() {}
 
 func (x *GetNodesByLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[9]
+	mi := &file_repository_repository_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -593,7 +969,7 @@ func (x *GetNodesByLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNodesByLogRequest.ProtoReflect.Descriptor instead.
 func (*GetNodesByLogRequest) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{9}
+	return file_repository_repository_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetNodesByLogRequest) GetLogId() int64 {
@@ -612,7 +988,7 @@ type GetPortsByLogRequest struct {
 
 func (x *GetPortsByLogRequest) Reset() {
 	*x = GetPortsByLogRequest{}
-	mi := &file_repository_repository_proto_msgTypes[10]
+	mi := &file_repository_repository_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -624,7 +1000,7 @@ func (x *GetPortsByLogRequest) String() string {
 func (*GetPortsByLogRequest) ProtoMessage() {}
 
 func (x *GetPortsByLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[10]
+	mi := &file_repository_repository_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -637,7 +1013,7 @@ func (x *GetPortsByLogRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPortsByLogRequest.ProtoReflect.Descriptor instead.
 func (*GetPortsByLogRequest) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{10}
+	return file_repository_repository_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetPortsByLogRequest) GetLogId() int64 {
@@ -645,6 +1021,110 @@ func (x *GetPortsByLogRequest) GetLogId() int64 {
 		return x.LogId
 	}
 	return 0
+}
+
+type GetTopologyDataRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LogId         int64                  `protobuf:"varint,1,opt,name=log_id,json=logId,proto3" json:"log_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetTopologyDataRequest) Reset() {
+	*x = GetTopologyDataRequest{}
+	mi := &file_repository_repository_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetTopologyDataRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetTopologyDataRequest) ProtoMessage() {}
+
+func (x *GetTopologyDataRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_repository_repository_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetTopologyDataRequest.ProtoReflect.Descriptor instead.
+func (*GetTopologyDataRequest) Descriptor() ([]byte, []int) {
+	return file_repository_repository_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GetTopologyDataRequest) GetLogId() int64 {
+	if x != nil {
+		return x.LogId
+	}
+	return 0
+}
+
+type TopologyDataResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Log           *Log                   `protobuf:"bytes,1,opt,name=log,proto3" json:"log,omitempty"`
+	Nodes         []*NodeDetails         `protobuf:"bytes,2,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	Ports         []*Port                `protobuf:"bytes,3,rep,name=ports,proto3" json:"ports,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TopologyDataResponse) Reset() {
+	*x = TopologyDataResponse{}
+	mi := &file_repository_repository_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TopologyDataResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TopologyDataResponse) ProtoMessage() {}
+
+func (x *TopologyDataResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_repository_repository_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TopologyDataResponse.ProtoReflect.Descriptor instead.
+func (*TopologyDataResponse) Descriptor() ([]byte, []int) {
+	return file_repository_repository_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *TopologyDataResponse) GetLog() *Log {
+	if x != nil {
+		return x.Log
+	}
+	return nil
+}
+
+func (x *TopologyDataResponse) GetNodes() []*NodeDetails {
+	if x != nil {
+		return x.Nodes
+	}
+	return nil
+}
+
+func (x *TopologyDataResponse) GetPorts() []*Port {
+	if x != nil {
+		return x.Ports
+	}
+	return nil
 }
 
 type NodeDetails struct {
@@ -668,7 +1148,7 @@ type NodeDetails struct {
 
 func (x *NodeDetails) Reset() {
 	*x = NodeDetails{}
-	mi := &file_repository_repository_proto_msgTypes[11]
+	mi := &file_repository_repository_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -680,7 +1160,7 @@ func (x *NodeDetails) String() string {
 func (*NodeDetails) ProtoMessage() {}
 
 func (x *NodeDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[11]
+	mi := &file_repository_repository_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -693,7 +1173,7 @@ func (x *NodeDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeDetails.ProtoReflect.Descriptor instead.
 func (*NodeDetails) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{11}
+	return file_repository_repository_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *NodeDetails) GetId() int64 {
@@ -803,7 +1283,7 @@ type NodeInfo struct {
 
 func (x *NodeInfo) Reset() {
 	*x = NodeInfo{}
-	mi := &file_repository_repository_proto_msgTypes[12]
+	mi := &file_repository_repository_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -815,7 +1295,7 @@ func (x *NodeInfo) String() string {
 func (*NodeInfo) ProtoMessage() {}
 
 func (x *NodeInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[12]
+	mi := &file_repository_repository_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -828,7 +1308,7 @@ func (x *NodeInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeInfo.ProtoReflect.Descriptor instead.
 func (*NodeInfo) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{12}
+	return file_repository_repository_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *NodeInfo) GetId() int64 {
@@ -908,7 +1388,7 @@ type Port struct {
 
 func (x *Port) Reset() {
 	*x = Port{}
-	mi := &file_repository_repository_proto_msgTypes[13]
+	mi := &file_repository_repository_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +1400,7 @@ func (x *Port) String() string {
 func (*Port) ProtoMessage() {}
 
 func (x *Port) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[13]
+	mi := &file_repository_repository_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -933,7 +1413,7 @@ func (x *Port) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Port.ProtoReflect.Descriptor instead.
 func (*Port) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{13}
+	return file_repository_repository_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *Port) GetId() int64 {
@@ -1036,7 +1516,7 @@ type NodesResponse struct {
 
 func (x *NodesResponse) Reset() {
 	*x = NodesResponse{}
-	mi := &file_repository_repository_proto_msgTypes[14]
+	mi := &file_repository_repository_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1048,7 +1528,7 @@ func (x *NodesResponse) String() string {
 func (*NodesResponse) ProtoMessage() {}
 
 func (x *NodesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[14]
+	mi := &file_repository_repository_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1061,7 +1541,7 @@ func (x *NodesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodesResponse.ProtoReflect.Descriptor instead.
 func (*NodesResponse) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{14}
+	return file_repository_repository_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *NodesResponse) GetNodes() []*NodeDetails {
@@ -1080,7 +1560,7 @@ type PortsResponse struct {
 
 func (x *PortsResponse) Reset() {
 	*x = PortsResponse{}
-	mi := &file_repository_repository_proto_msgTypes[15]
+	mi := &file_repository_repository_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1092,7 +1572,7 @@ func (x *PortsResponse) String() string {
 func (*PortsResponse) ProtoMessage() {}
 
 func (x *PortsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_repository_repository_proto_msgTypes[15]
+	mi := &file_repository_repository_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1105,7 +1585,7 @@ func (x *PortsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PortsResponse.ProtoReflect.Descriptor instead.
 func (*PortsResponse) Descriptor() ([]byte, []int) {
-	return file_repository_repository_proto_rawDescGZIP(), []int{15}
+	return file_repository_repository_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *PortsResponse) GetPorts() []*Port {
@@ -1120,15 +1600,15 @@ var File_repository_repository_proto protoreflect.FileDescriptor
 const file_repository_repository_proto_rawDesc = "" +
 	"\n" +
 	"\x1brepository/repository.proto\x12\n" +
-	"repository\x1a\x1bgoogle/protobuf/empty.proto\x1a\x13parser/parser.proto\"/\n" +
+	"repository\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"/\n" +
 	"\x10CreateLogRequest\x12\x1b\n" +
 	"\tfile_path\x18\x01 \x01(\tR\bfilePath\"*\n" +
 	"\x11CreateLogResponse\x12\x15\n" +
-	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"_\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"c\n" +
 	"\x14SaveParsedLogRequest\x12\x15\n" +
-	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x120\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x124\n" +
 	"\n" +
-	"parsed_log\x18\x02 \x01(\v2\x11.parser.ParsedLogR\tparsedLog\"p\n" +
+	"parsed_log\x18\x02 \x01(\v2\x15.repository.ParsedLogR\tparsedLog\"p\n" +
 	"\x15SaveParsedLogResponse\x12\x15\n" +
 	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x12\x1f\n" +
 	"\vnodes_count\x18\x02 \x01(\x05R\n" +
@@ -1137,9 +1617,49 @@ const file_repository_repository_proto_rawDesc = "" +
 	"portsCount\"=\n" +
 	"\x0eFailLogRequest\x12\x15\n" +
 	"\x06log_id\x18\x01 \x01(\x03R\x05logId\x12\x14\n" +
-	"\x05error\x18\x02 \x01(\tR\x05error\"&\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"\xa2\x01\n" +
+	"\tParsedLog\x12,\n" +
+	"\x05nodes\x18\x01 \x03(\v2\x16.repository.ParsedNodeR\x05nodes\x12,\n" +
+	"\x05ports\x18\x02 \x03(\v2\x16.repository.ParsedPortR\x05ports\x129\n" +
+	"\n" +
+	"nodes_info\x18\x03 \x03(\v2\x1a.repository.ParsedNodeInfoR\tnodesInfo\"\xc9\x02\n" +
+	"\n" +
+	"ParsedNode\x12\x1b\n" +
+	"\tnode_guid\x18\x01 \x01(\tR\bnodeGuid\x12\x1b\n" +
+	"\tnode_desc\x18\x02 \x01(\tR\bnodeDesc\x12\x1b\n" +
+	"\tnode_type\x18\x03 \x01(\x05R\bnodeType\x12\x1b\n" +
+	"\tnode_kind\x18\x04 \x01(\tR\bnodeKind\x12\x1b\n" +
+	"\tnum_ports\x18\x05 \x01(\x05R\bnumPorts\x12#\n" +
+	"\rclass_version\x18\x06 \x01(\x05R\fclassVersion\x12!\n" +
+	"\fbase_version\x18\a \x01(\x05R\vbaseVersion\x12*\n" +
+	"\x11system_image_guid\x18\b \x01(\tR\x0fsystemImageGuid\x12\x1b\n" +
+	"\tport_guid\x18\t \x01(\tR\bportGuid\x12\x19\n" +
+	"\braw_json\x18\n" +
+	" \x01(\tR\arawJson\"\xd1\x02\n" +
+	"\n" +
+	"ParsedPort\x12\x1b\n" +
+	"\tnode_guid\x18\x01 \x01(\tR\bnodeGuid\x12\x1b\n" +
+	"\tport_guid\x18\x02 \x01(\tR\bportGuid\x12\x19\n" +
+	"\bport_num\x18\x03 \x01(\x05R\aportNum\x12\x10\n" +
+	"\x03lid\x18\x04 \x01(\x05R\x03lid\x12$\n" +
+	"\x0elocal_port_num\x18\x05 \x01(\x05R\flocalPortNum\x12\x1d\n" +
+	"\n" +
+	"port_state\x18\x06 \x01(\x05R\tportState\x12$\n" +
+	"\x0eport_phy_state\x18\a \x01(\x05R\fportPhyState\x12*\n" +
+	"\x11link_width_active\x18\b \x01(\x05R\x0flinkWidthActive\x12*\n" +
+	"\x11link_speed_active\x18\t \x01(\x05R\x0flinkSpeedActive\x12\x19\n" +
+	"\braw_json\x18\n" +
+	" \x01(\tR\arawJson\"\xcd\x01\n" +
+	"\x0eParsedNodeInfo\x12\x1b\n" +
+	"\tnode_guid\x18\x01 \x01(\tR\bnodeGuid\x12#\n" +
+	"\rserial_number\x18\x02 \x01(\tR\fserialNumber\x12\x1f\n" +
+	"\vpart_number\x18\x03 \x01(\tR\n" +
+	"partNumber\x12\x1a\n" +
+	"\brevision\x18\x04 \x01(\tR\brevision\x12!\n" +
+	"\fproduct_name\x18\x05 \x01(\tR\vproductName\x12\x19\n" +
+	"\braw_json\x18\x06 \x01(\tR\arawJson\"&\n" +
 	"\rGetLogRequest\x12\x15\n" +
-	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\xf7\x01\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\xaf\x02\n" +
 	"\x03Log\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
 	"\tfile_path\x18\x02 \x01(\tR\bfilePath\x12-\n" +
@@ -1148,10 +1668,10 @@ const file_repository_repository_proto_rawDesc = "" +
 	"nodesCount\x12\x1f\n" +
 	"\vports_count\x18\x05 \x01(\x05R\n" +
 	"portsCount\x12\x14\n" +
-	"\x05error\x18\x06 \x01(\tR\x05error\x12\x1f\n" +
-	"\vuploaded_at\x18\a \x01(\tR\n" +
-	"uploadedAt\x12\x1b\n" +
-	"\tparsed_at\x18\b \x01(\tR\bparsedAt\")\n" +
+	"\x05error\x18\x06 \x01(\tR\x05error\x12;\n" +
+	"\vuploaded_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"uploadedAt\x127\n" +
+	"\tparsed_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\bparsedAt\")\n" +
 	"\x0eGetNodeRequest\x12\x17\n" +
 	"\anode_id\x18\x01 \x01(\x03R\x06nodeId\"0\n" +
 	"\x15GetPortsByNodeRequest\x12\x17\n" +
@@ -1159,7 +1679,13 @@ const file_repository_repository_proto_rawDesc = "" +
 	"\x14GetNodesByLogRequest\x12\x15\n" +
 	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"-\n" +
 	"\x14GetPortsByLogRequest\x12\x15\n" +
-	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\x9b\x03\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"/\n" +
+	"\x16GetTopologyDataRequest\x12\x15\n" +
+	"\x06log_id\x18\x01 \x01(\x03R\x05logId\"\x90\x01\n" +
+	"\x14TopologyDataResponse\x12!\n" +
+	"\x03log\x18\x01 \x01(\v2\x0f.repository.LogR\x03log\x12-\n" +
+	"\x05nodes\x18\x02 \x03(\v2\x17.repository.NodeDetailsR\x05nodes\x12&\n" +
+	"\x05ports\x18\x03 \x03(\v2\x10.repository.PortR\x05ports\"\x9b\x03\n" +
 	"\vNodeDetails\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x15\n" +
 	"\x06log_id\x18\x02 \x01(\x03R\x05logId\x12\x1b\n" +
@@ -1209,7 +1735,7 @@ const file_repository_repository_proto_rawDesc = "" +
 	"\x16LOG_STATUS_UNSPECIFIED\x10\x00\x12\x19\n" +
 	"\x15LOG_STATUS_PROCESSING\x10\x01\x12\x15\n" +
 	"\x11LOG_STATUS_PARSED\x10\x02\x12\x15\n" +
-	"\x11LOG_STATUS_FAILED\x10\x032\x85\x05\n" +
+	"\x11LOG_STATUS_FAILED\x10\x032\xde\x05\n" +
 	"\n" +
 	"Repository\x126\n" +
 	"\x04Ping\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\x12H\n" +
@@ -1220,7 +1746,8 @@ const file_repository_repository_proto_rawDesc = "" +
 	"\aGetNode\x12\x1a.repository.GetNodeRequest\x1a\x17.repository.NodeDetails\x12N\n" +
 	"\x0eGetPortsByNode\x12!.repository.GetPortsByNodeRequest\x1a\x19.repository.PortsResponse\x12L\n" +
 	"\rGetNodesByLog\x12 .repository.GetNodesByLogRequest\x1a\x19.repository.NodesResponse\x12L\n" +
-	"\rGetPortsByLog\x12 .repository.GetPortsByLogRequest\x1a\x19.repository.PortsResponseBMZKgithub.com/voronkov44/microservice-log-parser/log-services/proto/repositoryb\x06proto3"
+	"\rGetPortsByLog\x12 .repository.GetPortsByLogRequest\x1a\x19.repository.PortsResponse\x12W\n" +
+	"\x0fGetTopologyData\x12\".repository.GetTopologyDataRequest\x1a .repository.TopologyDataResponseBMZKgithub.com/voronkov44/microservice-log-parser/log-services/proto/repositoryb\x06proto3"
 
 var (
 	file_repository_repository_proto_rawDescOnce sync.Once
@@ -1235,57 +1762,73 @@ func file_repository_repository_proto_rawDescGZIP() []byte {
 }
 
 var file_repository_repository_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_repository_repository_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_repository_repository_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_repository_repository_proto_goTypes = []any{
-	(LogStatus)(0),                // 0: repository.LogStatus
-	(*CreateLogRequest)(nil),      // 1: repository.CreateLogRequest
-	(*CreateLogResponse)(nil),     // 2: repository.CreateLogResponse
-	(*SaveParsedLogRequest)(nil),  // 3: repository.SaveParsedLogRequest
-	(*SaveParsedLogResponse)(nil), // 4: repository.SaveParsedLogResponse
-	(*FailLogRequest)(nil),        // 5: repository.FailLogRequest
-	(*GetLogRequest)(nil),         // 6: repository.GetLogRequest
-	(*Log)(nil),                   // 7: repository.Log
-	(*GetNodeRequest)(nil),        // 8: repository.GetNodeRequest
-	(*GetPortsByNodeRequest)(nil), // 9: repository.GetPortsByNodeRequest
-	(*GetNodesByLogRequest)(nil),  // 10: repository.GetNodesByLogRequest
-	(*GetPortsByLogRequest)(nil),  // 11: repository.GetPortsByLogRequest
-	(*NodeDetails)(nil),           // 12: repository.NodeDetails
-	(*NodeInfo)(nil),              // 13: repository.NodeInfo
-	(*Port)(nil),                  // 14: repository.Port
-	(*NodesResponse)(nil),         // 15: repository.NodesResponse
-	(*PortsResponse)(nil),         // 16: repository.PortsResponse
-	(*parser.ParsedLog)(nil),      // 17: parser.ParsedLog
-	(*emptypb.Empty)(nil),         // 18: google.protobuf.Empty
+	(LogStatus)(0),                 // 0: repository.LogStatus
+	(*CreateLogRequest)(nil),       // 1: repository.CreateLogRequest
+	(*CreateLogResponse)(nil),      // 2: repository.CreateLogResponse
+	(*SaveParsedLogRequest)(nil),   // 3: repository.SaveParsedLogRequest
+	(*SaveParsedLogResponse)(nil),  // 4: repository.SaveParsedLogResponse
+	(*FailLogRequest)(nil),         // 5: repository.FailLogRequest
+	(*ParsedLog)(nil),              // 6: repository.ParsedLog
+	(*ParsedNode)(nil),             // 7: repository.ParsedNode
+	(*ParsedPort)(nil),             // 8: repository.ParsedPort
+	(*ParsedNodeInfo)(nil),         // 9: repository.ParsedNodeInfo
+	(*GetLogRequest)(nil),          // 10: repository.GetLogRequest
+	(*Log)(nil),                    // 11: repository.Log
+	(*GetNodeRequest)(nil),         // 12: repository.GetNodeRequest
+	(*GetPortsByNodeRequest)(nil),  // 13: repository.GetPortsByNodeRequest
+	(*GetNodesByLogRequest)(nil),   // 14: repository.GetNodesByLogRequest
+	(*GetPortsByLogRequest)(nil),   // 15: repository.GetPortsByLogRequest
+	(*GetTopologyDataRequest)(nil), // 16: repository.GetTopologyDataRequest
+	(*TopologyDataResponse)(nil),   // 17: repository.TopologyDataResponse
+	(*NodeDetails)(nil),            // 18: repository.NodeDetails
+	(*NodeInfo)(nil),               // 19: repository.NodeInfo
+	(*Port)(nil),                   // 20: repository.Port
+	(*NodesResponse)(nil),          // 21: repository.NodesResponse
+	(*PortsResponse)(nil),          // 22: repository.PortsResponse
+	(*timestamppb.Timestamp)(nil),  // 23: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),          // 24: google.protobuf.Empty
 }
 var file_repository_repository_proto_depIdxs = []int32{
-	17, // 0: repository.SaveParsedLogRequest.parsed_log:type_name -> parser.ParsedLog
-	0,  // 1: repository.Log.status:type_name -> repository.LogStatus
-	13, // 2: repository.NodeDetails.info:type_name -> repository.NodeInfo
-	12, // 3: repository.NodesResponse.nodes:type_name -> repository.NodeDetails
-	14, // 4: repository.PortsResponse.ports:type_name -> repository.Port
-	18, // 5: repository.Repository.Ping:input_type -> google.protobuf.Empty
-	1,  // 6: repository.Repository.CreateLog:input_type -> repository.CreateLogRequest
-	3,  // 7: repository.Repository.SaveParsedLog:input_type -> repository.SaveParsedLogRequest
-	5,  // 8: repository.Repository.FailLog:input_type -> repository.FailLogRequest
-	6,  // 9: repository.Repository.GetLog:input_type -> repository.GetLogRequest
-	8,  // 10: repository.Repository.GetNode:input_type -> repository.GetNodeRequest
-	9,  // 11: repository.Repository.GetPortsByNode:input_type -> repository.GetPortsByNodeRequest
-	10, // 12: repository.Repository.GetNodesByLog:input_type -> repository.GetNodesByLogRequest
-	11, // 13: repository.Repository.GetPortsByLog:input_type -> repository.GetPortsByLogRequest
-	18, // 14: repository.Repository.Ping:output_type -> google.protobuf.Empty
-	2,  // 15: repository.Repository.CreateLog:output_type -> repository.CreateLogResponse
-	4,  // 16: repository.Repository.SaveParsedLog:output_type -> repository.SaveParsedLogResponse
-	18, // 17: repository.Repository.FailLog:output_type -> google.protobuf.Empty
-	7,  // 18: repository.Repository.GetLog:output_type -> repository.Log
-	12, // 19: repository.Repository.GetNode:output_type -> repository.NodeDetails
-	16, // 20: repository.Repository.GetPortsByNode:output_type -> repository.PortsResponse
-	15, // 21: repository.Repository.GetNodesByLog:output_type -> repository.NodesResponse
-	16, // 22: repository.Repository.GetPortsByLog:output_type -> repository.PortsResponse
-	14, // [14:23] is the sub-list for method output_type
-	5,  // [5:14] is the sub-list for method input_type
-	5,  // [5:5] is the sub-list for extension type_name
-	5,  // [5:5] is the sub-list for extension extendee
-	0,  // [0:5] is the sub-list for field type_name
+	6,  // 0: repository.SaveParsedLogRequest.parsed_log:type_name -> repository.ParsedLog
+	7,  // 1: repository.ParsedLog.nodes:type_name -> repository.ParsedNode
+	8,  // 2: repository.ParsedLog.ports:type_name -> repository.ParsedPort
+	9,  // 3: repository.ParsedLog.nodes_info:type_name -> repository.ParsedNodeInfo
+	0,  // 4: repository.Log.status:type_name -> repository.LogStatus
+	23, // 5: repository.Log.uploaded_at:type_name -> google.protobuf.Timestamp
+	23, // 6: repository.Log.parsed_at:type_name -> google.protobuf.Timestamp
+	11, // 7: repository.TopologyDataResponse.log:type_name -> repository.Log
+	18, // 8: repository.TopologyDataResponse.nodes:type_name -> repository.NodeDetails
+	20, // 9: repository.TopologyDataResponse.ports:type_name -> repository.Port
+	19, // 10: repository.NodeDetails.info:type_name -> repository.NodeInfo
+	18, // 11: repository.NodesResponse.nodes:type_name -> repository.NodeDetails
+	20, // 12: repository.PortsResponse.ports:type_name -> repository.Port
+	24, // 13: repository.Repository.Ping:input_type -> google.protobuf.Empty
+	1,  // 14: repository.Repository.CreateLog:input_type -> repository.CreateLogRequest
+	3,  // 15: repository.Repository.SaveParsedLog:input_type -> repository.SaveParsedLogRequest
+	5,  // 16: repository.Repository.FailLog:input_type -> repository.FailLogRequest
+	10, // 17: repository.Repository.GetLog:input_type -> repository.GetLogRequest
+	12, // 18: repository.Repository.GetNode:input_type -> repository.GetNodeRequest
+	13, // 19: repository.Repository.GetPortsByNode:input_type -> repository.GetPortsByNodeRequest
+	14, // 20: repository.Repository.GetNodesByLog:input_type -> repository.GetNodesByLogRequest
+	15, // 21: repository.Repository.GetPortsByLog:input_type -> repository.GetPortsByLogRequest
+	16, // 22: repository.Repository.GetTopologyData:input_type -> repository.GetTopologyDataRequest
+	24, // 23: repository.Repository.Ping:output_type -> google.protobuf.Empty
+	2,  // 24: repository.Repository.CreateLog:output_type -> repository.CreateLogResponse
+	4,  // 25: repository.Repository.SaveParsedLog:output_type -> repository.SaveParsedLogResponse
+	24, // 26: repository.Repository.FailLog:output_type -> google.protobuf.Empty
+	11, // 27: repository.Repository.GetLog:output_type -> repository.Log
+	18, // 28: repository.Repository.GetNode:output_type -> repository.NodeDetails
+	22, // 29: repository.Repository.GetPortsByNode:output_type -> repository.PortsResponse
+	21, // 30: repository.Repository.GetNodesByLog:output_type -> repository.NodesResponse
+	22, // 31: repository.Repository.GetPortsByLog:output_type -> repository.PortsResponse
+	17, // 32: repository.Repository.GetTopologyData:output_type -> repository.TopologyDataResponse
+	23, // [23:33] is the sub-list for method output_type
+	13, // [13:23] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_repository_repository_proto_init() }
@@ -1299,7 +1842,7 @@ func file_repository_repository_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_repository_repository_proto_rawDesc), len(file_repository_repository_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   16,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

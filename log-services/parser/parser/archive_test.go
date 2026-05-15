@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"testing"
 
 	"github.com/voronkov44/microservice-log-parser/log-services/parser/core"
@@ -133,6 +134,44 @@ func TestReadSourceErrors(t *testing.T) {
 			t.Fatalf("readSource() error = %v, want ErrBadArguments", err)
 		}
 	})
+
+	t.Run("too many archive files", func(t *testing.T) {
+		path := filepath.Join(dir, "too-many.zip")
+		files := make(map[string]string, maxFiles+1)
+		for i := 0; i <= maxFiles; i++ {
+			files[filepath.Join("logs", strconv.Itoa(i)+".log")] = "node_guid=node\n"
+		}
+		writeZip(t, path, files)
+
+		_, err := engine.readSource(ctx, path)
+		if !errors.Is(err, core.ErrBadArguments) {
+			t.Fatalf("readSource() error = %v, want ErrBadArguments", err)
+		}
+	})
+}
+
+func TestArchiveLimits(t *testing.T) {
+	t.Run("too large single file", func(t *testing.T) {
+		var limits archiveLimits
+		if err := limits.addFile("huge.log", maxFileSize+1); !errors.Is(err, core.ErrBadArguments) {
+			t.Fatalf("addFile() error = %v, want ErrBadArguments", err)
+		}
+	})
+
+	t.Run("too large total size", func(t *testing.T) {
+		var limits archiveLimits
+		fileSize := maxTotalBytes / 2
+
+		if err := limits.addFile("one.log", fileSize); err != nil {
+			t.Fatalf("addFile(one) error = %v", err)
+		}
+		if err := limits.addFile("two.log", fileSize); err != nil {
+			t.Fatalf("addFile(two) error = %v", err)
+		}
+		if err := limits.addFile("three.log", 1); !errors.Is(err, core.ErrBadArguments) {
+			t.Fatalf("addFile(three) error = %v, want ErrBadArguments", err)
+		}
+	})
 }
 
 func TestEngineParseArchive(t *testing.T) {
@@ -206,6 +245,59 @@ func TestEngineParseIncompleteObjectsCreatesUnknownNode(t *testing.T) {
 	if parsed.Nodes[0].NodeGUID != "port-only-node" || parsed.Nodes[0].NodeKind != "unknown" {
 		t.Fatalf("created node = %+v, want unknown node for port-only-node", parsed.Nodes[0])
 	}
+}
+
+func TestEngineParseStrictValidation(t *testing.T) {
+	dir := t.TempDir()
+	engine := New(dir, slog.New(slog.NewTextHandler(os.Stderr, nil)))
+
+	t.Run("invalid numeric value", func(t *testing.T) {
+		if err := os.WriteFile(
+			filepath.Join(dir, "bad-numeric.csv"),
+			[]byte("node_guid,node_desc,node_type\nnode-1,host,not-a-number\n"),
+			0o644,
+		); err != nil {
+			t.Fatalf("write bad numeric file: %v", err)
+		}
+
+		_, err := engine.Parse(context.Background(), "bad-numeric.csv")
+		if !errors.Is(err, core.ErrParse) {
+			t.Fatalf("Parse() error = %v, want ErrParse", err)
+		}
+	})
+
+	t.Run("malformed key-value section", func(t *testing.T) {
+		if err := os.WriteFile(
+			filepath.Join(dir, "bad-section.log"),
+			[]byte("node_guid=node-1\nthis line is malformed\n"),
+			0o644,
+		); err != nil {
+			t.Fatalf("write bad section file: %v", err)
+		}
+
+		_, err := engine.Parse(context.Background(), "bad-section.log")
+		if !errors.Is(err, core.ErrParse) {
+			t.Fatalf("Parse() error = %v, want ErrParse", err)
+		}
+	})
+
+	t.Run("missing optional numeric fields", func(t *testing.T) {
+		if err := os.WriteFile(
+			filepath.Join(dir, "missing-optional.csv"),
+			[]byte("node_guid,node_desc\nnode-1,host\n"),
+			0o644,
+		); err != nil {
+			t.Fatalf("write missing optional file: %v", err)
+		}
+
+		parsed, err := engine.Parse(context.Background(), "missing-optional.csv")
+		if err != nil {
+			t.Fatalf("Parse() error = %v", err)
+		}
+		if len(parsed.Nodes) != 1 || parsed.Nodes[0].NodeGUID != "node-1" {
+			t.Fatalf("parsed = %+v", parsed)
+		}
+	})
 }
 
 func TestEngineParseReturnsExpectedErrors(t *testing.T) {

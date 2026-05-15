@@ -31,6 +31,12 @@ type SaveParsedLogResult struct {
 	PortsCount int32
 }
 
+type TopologyData struct {
+	Log   Log
+	Nodes []Node
+	Ports []Port
+}
+
 type Node struct {
 	ID    int64
 	LogID int64

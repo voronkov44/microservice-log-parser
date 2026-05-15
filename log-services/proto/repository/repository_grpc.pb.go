@@ -20,15 +20,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Repository_Ping_FullMethodName           = "/repository.Repository/Ping"
-	Repository_CreateLog_FullMethodName      = "/repository.Repository/CreateLog"
-	Repository_SaveParsedLog_FullMethodName  = "/repository.Repository/SaveParsedLog"
-	Repository_FailLog_FullMethodName        = "/repository.Repository/FailLog"
-	Repository_GetLog_FullMethodName         = "/repository.Repository/GetLog"
-	Repository_GetNode_FullMethodName        = "/repository.Repository/GetNode"
-	Repository_GetPortsByNode_FullMethodName = "/repository.Repository/GetPortsByNode"
-	Repository_GetNodesByLog_FullMethodName  = "/repository.Repository/GetNodesByLog"
-	Repository_GetPortsByLog_FullMethodName  = "/repository.Repository/GetPortsByLog"
+	Repository_Ping_FullMethodName            = "/repository.Repository/Ping"
+	Repository_CreateLog_FullMethodName       = "/repository.Repository/CreateLog"
+	Repository_SaveParsedLog_FullMethodName   = "/repository.Repository/SaveParsedLog"
+	Repository_FailLog_FullMethodName         = "/repository.Repository/FailLog"
+	Repository_GetLog_FullMethodName          = "/repository.Repository/GetLog"
+	Repository_GetNode_FullMethodName         = "/repository.Repository/GetNode"
+	Repository_GetPortsByNode_FullMethodName  = "/repository.Repository/GetPortsByNode"
+	Repository_GetNodesByLog_FullMethodName   = "/repository.Repository/GetNodesByLog"
+	Repository_GetPortsByLog_FullMethodName   = "/repository.Repository/GetPortsByLog"
+	Repository_GetTopologyData_FullMethodName = "/repository.Repository/GetTopologyData"
 )
 
 // RepositoryClient is the client API for Repository service.
@@ -44,6 +45,7 @@ type RepositoryClient interface {
 	GetPortsByNode(ctx context.Context, in *GetPortsByNodeRequest, opts ...grpc.CallOption) (*PortsResponse, error)
 	GetNodesByLog(ctx context.Context, in *GetNodesByLogRequest, opts ...grpc.CallOption) (*NodesResponse, error)
 	GetPortsByLog(ctx context.Context, in *GetPortsByLogRequest, opts ...grpc.CallOption) (*PortsResponse, error)
+	GetTopologyData(ctx context.Context, in *GetTopologyDataRequest, opts ...grpc.CallOption) (*TopologyDataResponse, error)
 }
 
 type repositoryClient struct {
@@ -144,6 +146,16 @@ func (c *repositoryClient) GetPortsByLog(ctx context.Context, in *GetPortsByLogR
 	return out, nil
 }
 
+func (c *repositoryClient) GetTopologyData(ctx context.Context, in *GetTopologyDataRequest, opts ...grpc.CallOption) (*TopologyDataResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TopologyDataResponse)
+	err := c.cc.Invoke(ctx, Repository_GetTopologyData_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RepositoryServer is the server API for Repository service.
 // All implementations must embed UnimplementedRepositoryServer
 // for forward compatibility.
@@ -157,6 +169,7 @@ type RepositoryServer interface {
 	GetPortsByNode(context.Context, *GetPortsByNodeRequest) (*PortsResponse, error)
 	GetNodesByLog(context.Context, *GetNodesByLogRequest) (*NodesResponse, error)
 	GetPortsByLog(context.Context, *GetPortsByLogRequest) (*PortsResponse, error)
+	GetTopologyData(context.Context, *GetTopologyDataRequest) (*TopologyDataResponse, error)
 	mustEmbedUnimplementedRepositoryServer()
 }
 
@@ -193,6 +206,9 @@ func (UnimplementedRepositoryServer) GetNodesByLog(context.Context, *GetNodesByL
 }
 func (UnimplementedRepositoryServer) GetPortsByLog(context.Context, *GetPortsByLogRequest) (*PortsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPortsByLog not implemented")
+}
+func (UnimplementedRepositoryServer) GetTopologyData(context.Context, *GetTopologyDataRequest) (*TopologyDataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTopologyData not implemented")
 }
 func (UnimplementedRepositoryServer) mustEmbedUnimplementedRepositoryServer() {}
 func (UnimplementedRepositoryServer) testEmbeddedByValue()                    {}
@@ -377,6 +393,24 @@ func _Repository_GetPortsByLog_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Repository_GetTopologyData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTopologyDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RepositoryServer).GetTopologyData(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Repository_GetTopologyData_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RepositoryServer).GetTopologyData(ctx, req.(*GetTopologyDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Repository_ServiceDesc is the grpc.ServiceDesc for Repository service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -419,6 +453,10 @@ var Repository_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPortsByLog",
 			Handler:    _Repository_GetPortsByLog_Handler,
+		},
+		{
+			MethodName: "GetTopologyData",
+			Handler:    _Repository_GetTopologyData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

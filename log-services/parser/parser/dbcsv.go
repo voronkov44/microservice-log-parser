@@ -28,13 +28,16 @@ func parseCSV(file sourceFile) (core.ParsedLog, error) {
 	records := make([]map[string]string, 0, len(rows)-1)
 
 	for _, row := range rows[1:] {
-		rec := rowToRecord(headers, row)
+		rec, err := rowToRecord(headers, row)
+		if err != nil {
+			return core.ParsedLog{}, fmt.Errorf("%w: csv row is malformed: %v", core.ErrParse, err)
+		}
 		if len(rec) > 0 {
 			records = append(records, rec)
 		}
 	}
 
-	return recordsToParsedLog(file.name, records), nil
+	return recordsToParsedLog(file.name, records)
 }
 
 func parseDBCSV(file sourceFile) (core.ParsedLog, error) {
@@ -43,7 +46,10 @@ func parseDBCSV(file sourceFile) (core.ParsedLog, error) {
 		return core.ParsedLog{}, fmt.Errorf("%w: db_csv read failed: %v", core.ErrParse, err)
 	}
 
-	sections := splitDBCSVSections(rows)
+	sections, err := splitDBCSVSections(rows)
+	if err != nil {
+		return core.ParsedLog{}, err
+	}
 
 	// Если файл оказался обычной CSV-таблицей без START_/END_,
 	// пробуем обработать его как обычный CSV.
@@ -55,7 +61,10 @@ func parseDBCSV(file sourceFile) (core.ParsedLog, error) {
 
 	for _, section := range sections {
 		sectionName := file.name + "/" + section.name
-		sectionParsed := recordsToParsedLog(sectionName, section.records)
+		sectionParsed, err := recordsToParsedLog(sectionName, section.records)
+		if err != nil {
+			return core.ParsedLog{}, err
+		}
 
 		parsed.Nodes = append(parsed.Nodes, sectionParsed.Nodes...)
 		parsed.Ports = append(parsed.Ports, sectionParsed.Ports...)
@@ -92,7 +101,7 @@ func readDelimitedRows(data []byte) ([][]string, error) {
 	return out, nil
 }
 
-func splitDBCSVSections(rows [][]string) []dbcsvSection {
+func splitDBCSVSections(rows [][]string) ([]dbcsvSection, error) {
 	var sections []dbcsvSection
 
 	var currentName string
@@ -132,6 +141,15 @@ func splitDBCSVSections(rows [][]string) []dbcsvSection {
 		}
 
 		if strings.HasPrefix(marker, "END_") {
+			if currentName == "" {
+				return nil, fmt.Errorf("%w: unexpected section end %q", core.ErrParse, row[0])
+			}
+
+			endName := strings.ToLower(strings.TrimPrefix(marker, "END_"))
+			if endName != currentName {
+				return nil, fmt.Errorf("%w: section end %q does not match start %q", core.ErrParse, endName, currentName)
+			}
+
 			flush()
 			currentName = ""
 			continue
@@ -150,18 +168,25 @@ func splitDBCSVSections(rows [][]string) []dbcsvSection {
 			continue
 		}
 
-		rec := rowToRecord(currentHeader, row)
+		rec, err := rowToRecord(currentHeader, row)
+		if err != nil {
+			return nil, fmt.Errorf("%w: section %s row is malformed: %v", core.ErrParse, currentName, err)
+		}
 		if len(rec) > 0 {
 			currentRecords = append(currentRecords, rec)
 		}
 	}
 
+	if currentName != "" {
+		return nil, fmt.Errorf("%w: section %s is not closed", core.ErrParse, currentName)
+	}
+
 	flush()
 
-	return sections
+	return sections, nil
 }
 
-func rowToRecord(headers []string, row []string) map[string]string {
+func rowToRecord(headers []string, row []string) (map[string]string, error) {
 	rec := make(map[string]string, len(headers))
 
 	for i, header := range headers {
@@ -179,7 +204,13 @@ func rowToRecord(headers []string, row []string) map[string]string {
 		rec[key] = value
 	}
 
-	return rec
+	for i := len(headers); i < len(row); i++ {
+		if strings.TrimSpace(row[i]) != "" {
+			return nil, fmt.Errorf("extra value %q without header", row[i])
+		}
+	}
+
+	return rec, nil
 }
 
 func trimRow(row []string) []string {

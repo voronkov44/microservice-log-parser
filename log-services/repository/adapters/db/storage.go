@@ -22,7 +22,7 @@ type DB struct {
 func New(log *slog.Logger, address string) (*DB, error) {
 	conn, err := sqlx.Connect("pgx", address)
 	if err != nil {
-		log.Error("connection problem", "address", address, "error", err)
+		log.Error("connection problem", "error", err)
 		return nil, fmt.Errorf("connect db: %w", err)
 	}
 
@@ -69,17 +69,21 @@ func (db *DB) SaveParsedLog(ctx context.Context, logID int64, parsed core.Parsed
 		_ = tx.Rollback()
 	}()
 
-	var existingLogID int64
-	if err := tx.GetContext(ctx, &existingLogID, `
-		SELECT id
+	var currentStatus string
+	if err := tx.GetContext(ctx, &currentStatus, `
+		SELECT status
 		FROM logs
 		WHERE id = $1
+		FOR UPDATE
 	`, logID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return core.SaveParsedLogResult{}, core.ErrNotFound
 		}
 
-		return core.SaveParsedLogResult{}, fmt.Errorf("check log exists: %w", err)
+		return core.SaveParsedLogResult{}, fmt.Errorf("lock log: %w", err)
+	}
+	if core.LogStatus(currentStatus) != core.LogStatusProcessing {
+		return core.SaveParsedLogResult{}, fmt.Errorf("%w: log %d is %s", core.ErrInvalidStatus, logID, currentStatus)
 	}
 
 	_, err = tx.ExecContext(ctx, `
@@ -258,6 +262,7 @@ func (db *DB) FailLog(ctx context.Context, logID int64, errorText string) error 
 			error_text = $2,
 			parsed_at = now()
 		WHERE id = $1
+			AND status = 'processing'
 	`, logID, errorText)
 	if err != nil {
 		return fmt.Errorf("fail log: %w", err)
@@ -268,7 +273,20 @@ func (db *DB) FailLog(ctx context.Context, logID int64, errorText string) error 
 		return fmt.Errorf("check fail log result: %w", err)
 	}
 	if affected == 0 {
-		return core.ErrNotFound
+		var status string
+		if err := db.conn.GetContext(ctx, &status, `
+			SELECT status
+			FROM logs
+			WHERE id = $1
+		`, logID); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return core.ErrNotFound
+			}
+
+			return fmt.Errorf("check fail log status: %w", err)
+		}
+
+		return fmt.Errorf("%w: log %d is %s", core.ErrInvalidStatus, logID, status)
 	}
 
 	return nil
@@ -375,44 +393,38 @@ func (db *DB) GetPortsByNode(ctx context.Context, nodeID int64) ([]core.Port, er
 }
 
 func (db *DB) GetNodesByLog(ctx context.Context, logID int64) ([]core.Node, error) {
-	var rows []nodeRow
-
-	err := db.conn.SelectContext(ctx, &rows, `
+	nodes, err := selectNodesWithInfo(ctx, db.conn, `
 		SELECT
-			id,
-			log_id,
-			node_guid,
-			node_desc,
-			node_type,
-			node_kind,
-			num_ports,
-			class_version,
-			base_version,
-			system_image_guid,
-			port_guid,
-			raw_json
-		FROM nodes
-		WHERE log_id = $1
-		ORDER BY id
+			n.id,
+			n.log_id,
+			n.node_guid,
+			n.node_desc,
+			n.node_type,
+			n.node_kind,
+			n.num_ports,
+			n.class_version,
+			n.base_version,
+			n.system_image_guid,
+			n.port_guid,
+			n.raw_json,
+			ni.id AS info_id,
+			ni.node_id AS info_node_id,
+			ni.node_guid AS info_node_guid,
+			ni.serial_number AS info_serial_number,
+			ni.part_number AS info_part_number,
+			ni.revision AS info_revision,
+			ni.product_name AS info_product_name,
+			ni.raw_json AS info_raw_json
+		FROM nodes n
+		LEFT JOIN nodes_info ni ON ni.node_id = n.id
+		WHERE n.log_id = $1
+		ORDER BY n.id
 	`, logID)
 	if err != nil {
 		return nil, fmt.Errorf("get nodes by log: %w", err)
 	}
 
-	out := make([]core.Node, 0, len(rows))
-	for _, row := range rows {
-		node := row.toCore()
-
-		info, err := db.getNodeInfoByNodeID(ctx, node.ID)
-		if err != nil {
-			return nil, err
-		}
-		node.Info = info
-
-		out = append(out, node)
-	}
-
-	return out, nil
+	return nodes, nil
 }
 
 func (db *DB) GetPortsByLog(ctx context.Context, logID int64) ([]core.Port, error) {
@@ -442,6 +454,127 @@ func (db *DB) GetPortsByLog(ctx context.Context, logID int64) ([]core.Port, erro
 	}
 
 	out := make([]core.Port, 0, len(rows))
+	for _, row := range rows {
+		out = append(out, row.toCore())
+	}
+
+	return out, nil
+}
+
+func (db *DB) GetTopologyData(ctx context.Context, logID int64) (core.TopologyData, error) {
+	tx, err := db.conn.BeginTxx(ctx, &sql.TxOptions{
+		Isolation: sql.LevelRepeatableRead,
+		ReadOnly:  true,
+	})
+	if err != nil {
+		return core.TopologyData{}, fmt.Errorf("begin topology data tx: %w", err)
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	var log logRow
+	if err := tx.GetContext(ctx, &log, `
+		SELECT
+			id,
+			file_path,
+			status,
+			nodes_count,
+			ports_count,
+			error_text,
+			uploaded_at,
+			parsed_at
+		FROM logs
+		WHERE id = $1
+	`, logID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return core.TopologyData{}, core.ErrNotFound
+		}
+
+		return core.TopologyData{}, fmt.Errorf("get topology log: %w", err)
+	}
+
+	nodes, err := selectNodesWithInfo(ctx, tx, `
+		SELECT
+			n.id,
+			n.log_id,
+			n.node_guid,
+			n.node_desc,
+			n.node_type,
+			n.node_kind,
+			n.num_ports,
+			n.class_version,
+			n.base_version,
+			n.system_image_guid,
+			n.port_guid,
+			n.raw_json,
+			ni.id AS info_id,
+			ni.node_id AS info_node_id,
+			ni.node_guid AS info_node_guid,
+			ni.serial_number AS info_serial_number,
+			ni.part_number AS info_part_number,
+			ni.revision AS info_revision,
+			ni.product_name AS info_product_name,
+			ni.raw_json AS info_raw_json
+		FROM nodes n
+		LEFT JOIN nodes_info ni ON ni.node_id = n.id
+		WHERE n.log_id = $1
+		ORDER BY n.id
+	`, logID)
+	if err != nil {
+		return core.TopologyData{}, fmt.Errorf("get topology nodes: %w", err)
+	}
+
+	var portRows []portRow
+	if err := tx.SelectContext(ctx, &portRows, `
+		SELECT
+			id,
+			log_id,
+			node_id,
+			node_guid,
+			port_guid,
+			port_num,
+			lid,
+			local_port_num,
+			port_state,
+			port_phy_state,
+			link_width_active,
+			link_speed_active,
+			raw_json
+		FROM ports
+		WHERE log_id = $1
+		ORDER BY node_id, port_num, id
+	`, logID); err != nil {
+		return core.TopologyData{}, fmt.Errorf("get topology ports: %w", err)
+	}
+
+	ports := make([]core.Port, 0, len(portRows))
+	for _, row := range portRows {
+		ports = append(ports, row.toCore())
+	}
+
+	if err := tx.Commit(); err != nil {
+		return core.TopologyData{}, fmt.Errorf("commit topology data tx: %w", err)
+	}
+
+	return core.TopologyData{
+		Log:   log.toCore(),
+		Nodes: nodes,
+		Ports: ports,
+	}, nil
+}
+
+type nodeInfoSelector interface {
+	SelectContext(ctx context.Context, dest any, query string, args ...any) error
+}
+
+func selectNodesWithInfo(ctx context.Context, selector nodeInfoSelector, query string, args ...any) ([]core.Node, error) {
+	var rows []nodeWithInfoRow
+	if err := selector.SelectContext(ctx, &rows, query, args...); err != nil {
+		return nil, err
+	}
+
+	out := make([]core.Node, 0, len(rows))
 	for _, row := range rows {
 		out = append(out, row.toCore())
 	}
@@ -540,6 +673,62 @@ func (r nodeRow) toCore() core.Node {
 		PortGUID:        r.PortGUID,
 		RawJSON:         r.RawJSON,
 	}
+}
+
+type nodeWithInfoRow struct {
+	ID              int64  `db:"id"`
+	LogID           int64  `db:"log_id"`
+	NodeGUID        string `db:"node_guid"`
+	NodeDesc        string `db:"node_desc"`
+	NodeType        int32  `db:"node_type"`
+	NodeKind        string `db:"node_kind"`
+	NumPorts        int32  `db:"num_ports"`
+	ClassVersion    int32  `db:"class_version"`
+	BaseVersion     int32  `db:"base_version"`
+	SystemImageGUID string `db:"system_image_guid"`
+	PortGUID        string `db:"port_guid"`
+	RawJSON         string `db:"raw_json"`
+
+	InfoID          sql.NullInt64  `db:"info_id"`
+	InfoNodeID      sql.NullInt64  `db:"info_node_id"`
+	InfoNodeGUID    sql.NullString `db:"info_node_guid"`
+	InfoSerial      sql.NullString `db:"info_serial_number"`
+	InfoPartNumber  sql.NullString `db:"info_part_number"`
+	InfoRevision    sql.NullString `db:"info_revision"`
+	InfoProductName sql.NullString `db:"info_product_name"`
+	InfoRawJSON     sql.NullString `db:"info_raw_json"`
+}
+
+func (r nodeWithInfoRow) toCore() core.Node {
+	node := core.Node{
+		ID:              r.ID,
+		LogID:           r.LogID,
+		NodeGUID:        r.NodeGUID,
+		NodeDesc:        r.NodeDesc,
+		NodeType:        r.NodeType,
+		NodeKind:        r.NodeKind,
+		NumPorts:        r.NumPorts,
+		ClassVersion:    r.ClassVersion,
+		BaseVersion:     r.BaseVersion,
+		SystemImageGUID: r.SystemImageGUID,
+		PortGUID:        r.PortGUID,
+		RawJSON:         r.RawJSON,
+	}
+
+	if r.InfoID.Valid {
+		node.Info = &core.NodeInfo{
+			ID:           r.InfoID.Int64,
+			NodeID:       r.InfoNodeID.Int64,
+			NodeGUID:     r.InfoNodeGUID.String,
+			SerialNumber: r.InfoSerial.String,
+			PartNumber:   r.InfoPartNumber.String,
+			Revision:     r.InfoRevision.String,
+			ProductName:  r.InfoProductName.String,
+			RawJSON:      r.InfoRawJSON.String,
+		}
+	}
+
+	return node
 }
 
 type nodeInfoRow struct {

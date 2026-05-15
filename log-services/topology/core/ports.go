@@ -10,7 +10,5 @@ type Topology interface {
 type Repository interface {
 	Ping(context.Context) error
 
-	GetLog(ctx context.Context, logID int64) (Log, error)
-	GetNodesByLog(ctx context.Context, logID int64) ([]Node, error)
-	GetPortsByLog(ctx context.Context, logID int64) ([]Port, error)
+	GetTopologyData(ctx context.Context, logID int64) (TopologyData, error)
 }

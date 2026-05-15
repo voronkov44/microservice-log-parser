@@ -27,6 +27,12 @@ type TopologyResult struct {
 	Edges   []TopologyEdge
 }
 
+type TopologyData struct {
+	Log   Log
+	Nodes []Node
+	Ports []Port
+}
+
 type TopologySummary struct {
 	NodesCount    int32
 	PortsCount    int32

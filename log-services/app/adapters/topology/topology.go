@@ -171,6 +171,8 @@ func mapGRPCError(err error) error {
 		return core.ErrBadArguments
 	case codes.NotFound:
 		return core.ErrNotFound
+	case codes.FailedPrecondition:
+		return core.ErrConflict
 	case codes.Unavailable, codes.DeadlineExceeded, codes.Canceled:
 		return core.ErrUnavailable
 	default:

@@ -28,19 +28,17 @@ func (s *Service) GetTopology(ctx context.Context, logID int64) (TopologyResult,
 		return TopologyResult{}, ErrBadArguments
 	}
 
-	if _, err := s.repository.GetLog(ctx, logID); err != nil {
-		return TopologyResult{}, err
-	}
-
-	nodes, err := s.repository.GetNodesByLog(ctx, logID)
+	data, err := s.repository.GetTopologyData(ctx, logID)
 	if err != nil {
 		return TopologyResult{}, err
 	}
 
-	ports, err := s.repository.GetPortsByLog(ctx, logID)
-	if err != nil {
-		return TopologyResult{}, err
+	if data.Log.Status != LogStatusParsed {
+		return TopologyResult{}, ErrLogNotParsed
 	}
+
+	nodes := data.Nodes
+	ports := data.Ports
 
 	parsedPortsByNodeID := make(map[int64]int32)
 	parsedPortsByNodeGUID := make(map[string]int32)

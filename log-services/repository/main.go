@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -37,7 +38,7 @@ func main() {
 func run(cfg config.Config, log *slog.Logger) error {
 	log.Info("starting repository server",
 		"address", cfg.Address,
-		"db_address", cfg.DBAddress,
+		"db_address", maskDSN(cfg.DBAddress),
 	)
 	log.Debug("debug messages are enabled")
 
@@ -84,6 +85,20 @@ func run(cfg config.Config, log *slog.Logger) error {
 	}
 
 	return nil
+}
+
+func maskDSN(dsn string) string {
+	parsed, err := url.Parse(dsn)
+	if err != nil || parsed.User == nil {
+		return dsn
+	}
+
+	username := parsed.User.Username()
+	if _, ok := parsed.User.Password(); ok {
+		parsed.User = url.UserPassword(username, "xxxxx")
+	}
+
+	return parsed.String()
 }
 
 func mustMakeLogger(levelStr string) *slog.Logger {

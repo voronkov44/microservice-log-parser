@@ -85,3 +85,11 @@ func (s *Service) GetPortsByLog(ctx context.Context, logID int64) ([]Port, error
 
 	return s.db.GetPortsByLog(ctx, logID)
 }
+
+func (s *Service) GetTopologyData(ctx context.Context, logID int64) (TopologyData, error) {
+	if logID <= 0 {
+		return TopologyData{}, ErrBadArguments
+	}
+
+	return s.db.GetTopologyData(ctx, logID)
+}

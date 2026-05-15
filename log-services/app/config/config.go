@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"strings"
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -9,6 +10,7 @@ import (
 
 type HTTPConfig struct {
 	Address           string        `yaml:"address" env:"APP_ADDRESS" env-default:"localhost:8080"`
+	Port              string        `env:"PORT"`
 	Timeout           time.Duration `yaml:"timeout" env:"APP_TIMEOUT" env-default:"5s"`
 	ReadHeaderTimeout time.Duration `yaml:"read_header_timeout" env:"APP_READ_HEADER_TIMEOUT" env-default:"5s"`
 	ShutdownTimeout   time.Duration `yaml:"shutdown_timeout" env:"APP_SHUTDOWN_TIMEOUT" env-default:"10s"`
@@ -28,6 +30,10 @@ func MustLoad(configPath string) Config {
 	var cfg Config
 	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
 		log.Fatalf("cannot read config %q: %s", configPath, err)
+	}
+
+	if port := strings.TrimSpace(cfg.HTTPConfig.Port); port != "" {
+		cfg.HTTPConfig.Address = ":" + port
 	}
 
 	return cfg

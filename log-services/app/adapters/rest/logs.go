@@ -3,20 +3,22 @@ package rest
 import (
 	"context"
 	"errors"
-	"github.com/voronkov44/microservice-log-parser/log-services/app/pkg/req"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/voronkov44/microservice-log-parser/log-services/app/core"
+	"github.com/voronkov44/microservice-log-parser/log-services/app/pkg/req"
 	"github.com/voronkov44/microservice-log-parser/log-services/app/pkg/res"
 )
+
+const parseRequestBodyLimit = 1 << 20
 
 func NewParseLogHandler(log *slog.Logger, service core.LogParser, timeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		payload, err := req.HandleBody[parseLogRequest](w, r)
+		payload, err := req.HandleBodyLimit[parseLogRequest](w, r, parseRequestBodyLimit)
 		if err != nil {
 			return
 		}
@@ -65,6 +67,8 @@ func httpStatusFromError(err error) int {
 		return http.StatusBadRequest
 	case errors.Is(err, core.ErrNotFound):
 		return http.StatusNotFound
+	case errors.Is(err, core.ErrConflict):
+		return http.StatusConflict
 	case errors.Is(err, core.ErrUnavailable):
 		return http.StatusServiceUnavailable
 	default:

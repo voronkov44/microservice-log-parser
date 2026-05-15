@@ -15,6 +15,7 @@ type Repository interface {
 
 	GetNodesByLog(ctx context.Context, logID int64) ([]Node, error)
 	GetPortsByLog(ctx context.Context, logID int64) ([]Port, error)
+	GetTopologyData(ctx context.Context, logID int64) (TopologyData, error)
 }
 
 type DB interface {
@@ -30,4 +31,5 @@ type DB interface {
 
 	GetNodesByLog(ctx context.Context, logID int64) ([]Node, error)
 	GetPortsByLog(ctx context.Context, logID int64) ([]Port, error)
+	GetTopologyData(ctx context.Context, logID int64) (TopologyData, error)
 }

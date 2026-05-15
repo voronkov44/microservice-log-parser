@@ -20,11 +20,34 @@ func TestServiceGetTopologyRejectsBadLogID(t *testing.T) {
 
 func TestServiceGetTopologyPropagatesGetLogError(t *testing.T) {
 	wantErr := errors.New("repository failed")
-	service := NewService(slog.New(slog.NewTextHandler(os.Stderr, nil)), &fakeRepository{getLogErr: wantErr})
+	service := NewService(slog.New(slog.NewTextHandler(os.Stderr, nil)), &fakeRepository{getTopologyDataErr: wantErr})
 
 	_, err := service.GetTopology(context.Background(), 1)
 	if !errors.Is(err, wantErr) {
 		t.Fatalf("GetTopology() error = %v, want %v", err, wantErr)
+	}
+}
+
+func TestServiceGetTopologyRejectsNonParsedLogs(t *testing.T) {
+	tests := []struct {
+		name   string
+		status LogStatus
+	}{
+		{name: "processing", status: LogStatusProcessing},
+		{name: "failed", status: LogStatusFailed},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			service := NewService(slog.New(slog.NewTextHandler(os.Stderr, nil)), &fakeRepository{
+				log: Log{ID: 1, Status: tt.status},
+			})
+
+			_, err := service.GetTopology(context.Background(), 1)
+			if !errors.Is(err, ErrLogNotParsed) {
+				t.Fatalf("GetTopology() error = %v, want ErrLogNotParsed", err)
+			}
+		})
 	}
 }
 
@@ -160,9 +183,10 @@ type fakeRepository struct {
 	ports   []Port
 	pingErr error
 
-	getLogErr        error
-	getNodesByLogErr error
-	getPortsByLogErr error
+	getLogErr          error
+	getNodesByLogErr   error
+	getPortsByLogErr   error
+	getTopologyDataErr error
 }
 
 func (f *fakeRepository) Ping(context.Context) error {
@@ -179,4 +203,12 @@ func (f *fakeRepository) GetNodesByLog(context.Context, int64) ([]Node, error) {
 
 func (f *fakeRepository) GetPortsByLog(context.Context, int64) ([]Port, error) {
 	return f.ports, f.getPortsByLogErr
+}
+
+func (f *fakeRepository) GetTopologyData(context.Context, int64) (TopologyData, error) {
+	return TopologyData{
+		Log:   f.log,
+		Nodes: f.nodes,
+		Ports: f.ports,
+	}, f.getTopologyDataErr
 }

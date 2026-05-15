@@ -4,15 +4,16 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/voronkov44/microservice-log-parser/log-services/app/core"
-	parserpb "github.com/voronkov44/microservice-log-parser/log-services/proto/parser"
 	repositorypb "github.com/voronkov44/microservice-log-parser/log-services/proto/repository"
 )
 
@@ -150,10 +151,10 @@ func (c *Client) GetPortsByLog(ctx context.Context, logID int64) ([]core.Port, e
 	return portsFromProto(resp.GetPorts()), nil
 }
 
-func parsedLogToProto(in core.ParsedLog) *parserpb.ParsedLog {
-	nodes := make([]*parserpb.Node, 0, len(in.Nodes))
+func parsedLogToProto(in core.ParsedLog) *repositorypb.ParsedLog {
+	nodes := make([]*repositorypb.ParsedNode, 0, len(in.Nodes))
 	for _, node := range in.Nodes {
-		nodes = append(nodes, &parserpb.Node{
+		nodes = append(nodes, &repositorypb.ParsedNode{
 			NodeGuid:        node.NodeGUID,
 			NodeDesc:        node.NodeDesc,
 			NodeType:        node.NodeType,
@@ -167,9 +168,9 @@ func parsedLogToProto(in core.ParsedLog) *parserpb.ParsedLog {
 		})
 	}
 
-	ports := make([]*parserpb.Port, 0, len(in.Ports))
+	ports := make([]*repositorypb.ParsedPort, 0, len(in.Ports))
 	for _, port := range in.Ports {
-		ports = append(ports, &parserpb.Port{
+		ports = append(ports, &repositorypb.ParsedPort{
 			NodeGuid:        port.NodeGUID,
 			PortGuid:        port.PortGUID,
 			PortNum:         port.PortNum,
@@ -183,9 +184,9 @@ func parsedLogToProto(in core.ParsedLog) *parserpb.ParsedLog {
 		})
 	}
 
-	nodesInfo := make([]*parserpb.NodeInfo, 0, len(in.NodesInfo))
+	nodesInfo := make([]*repositorypb.ParsedNodeInfo, 0, len(in.NodesInfo))
 	for _, info := range in.NodesInfo {
-		nodesInfo = append(nodesInfo, &parserpb.NodeInfo{
+		nodesInfo = append(nodesInfo, &repositorypb.ParsedNodeInfo{
 			NodeGuid:     info.NodeGUID,
 			SerialNumber: info.SerialNumber,
 			PartNumber:   info.PartNumber,
@@ -195,7 +196,7 @@ func parsedLogToProto(in core.ParsedLog) *parserpb.ParsedLog {
 		})
 	}
 
-	return &parserpb.ParsedLog{
+	return &repositorypb.ParsedLog{
 		Nodes:     nodes,
 		Ports:     ports,
 		NodesInfo: nodesInfo,
@@ -214,9 +215,17 @@ func logFromProto(in *repositorypb.Log) core.Log {
 		NodesCount: in.GetNodesCount(),
 		PortsCount: in.GetPortsCount(),
 		Error:      in.GetError(),
-		UploadedAt: in.GetUploadedAt(),
-		ParsedAt:   in.GetParsedAt(),
+		UploadedAt: timestampFromProto(in.GetUploadedAt()),
+		ParsedAt:   timestampFromProto(in.GetParsedAt()),
 	}
+}
+
+func timestampFromProto(in *timestamppb.Timestamp) string {
+	if in == nil {
+		return ""
+	}
+
+	return in.AsTime().UTC().Format(time.RFC3339)
 }
 
 func logStatusFromProto(status repositorypb.LogStatus) core.LogStatus {
@@ -327,6 +336,8 @@ func mapGRPCError(err error) error {
 		return core.ErrBadArguments
 	case codes.NotFound:
 		return core.ErrNotFound
+	case codes.FailedPrecondition, codes.Aborted, codes.AlreadyExists:
+		return core.ErrConflict
 	case codes.Unavailable, codes.DeadlineExceeded, codes.Canceled:
 		return core.ErrUnavailable
 	default:

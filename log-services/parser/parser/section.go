@@ -12,7 +12,7 @@ import (
 
 func parseKeyValueSections(file sourceFile) (core.ParsedLog, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(file.data))
-	scanner.Buffer(make([]byte, 1024), maxFileSize)
+	scanner.Buffer(make([]byte, 1024), int(maxFileSize))
 
 	var records []map[string]string
 	current := make(map[string]string)
@@ -33,10 +33,13 @@ func parseKeyValueSections(file sourceFile) (core.ParsedLog, error) {
 			flush()
 			continue
 		}
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
 
 		key, value, ok := splitKeyValue(line)
 		if !ok {
-			continue
+			return core.ParsedLog{}, fmt.Errorf("%w: malformed key-value line %q", core.ErrParse, line)
 		}
 
 		current[key] = value
@@ -48,7 +51,7 @@ func parseKeyValueSections(file sourceFile) (core.ParsedLog, error) {
 
 	flush()
 
-	return recordsToParsedLog(file.name, records), nil
+	return recordsToParsedLog(file.name, records)
 }
 
 func splitKeyValue(line string) (string, string, bool) {
@@ -75,7 +78,7 @@ func splitKeyValue(line string) (string, string, bool) {
 	return "", "", false
 }
 
-func recordsToParsedLog(fileName string, records []map[string]string) core.ParsedLog {
+func recordsToParsedLog(fileName string, records []map[string]string) (core.ParsedLog, error) {
 	var parsed core.ParsedLog
 
 	for _, rec := range records {
@@ -84,16 +87,45 @@ func recordsToParsedLog(fileName string, records []map[string]string) core.Parse
 
 		switch classifyRecord(fileName, normalized) {
 		case "port":
+			portNum, err := parseOptionalInt32(normalized, "port_num", "portnum", "portnumber", "port")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			lid, err := parseOptionalInt32(normalized, "lid", "lid")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			localPortNum, err := parseOptionalInt32(normalized, "local_port_num", "localportnum", "localportnumber")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			portState, err := parseOptionalInt32(normalized, "port_state", "portstate", "state")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			portPhyState, err := parseOptionalInt32(normalized, "port_phy_state", "portphystate", "phystate", "physicalstate")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			linkWidthActive, err := parseOptionalInt32(normalized, "link_width_active", "linkwidthactive", "linkwidthactv", "linkwidth")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			linkSpeedActive, err := parseOptionalInt32(normalized, "link_speed_active", "linkspeedactive", "linkspeedactv", "linkspeed")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+
 			parsed.Ports = append(parsed.Ports, core.Port{
 				NodeGUID:        get(normalized, "nodeguid", "nodeid", "node"),
 				PortGUID:        get(normalized, "portguid", "portid"),
-				PortNum:         parseInt32(get(normalized, "portnum", "portnumber", "port")),
-				LID:             parseInt32(get(normalized, "lid")),
-				LocalPortNum:    parseInt32(get(normalized, "localportnum", "localportnumber")),
-				PortState:       parseInt32(get(normalized, "portstate", "state")),
-				PortPhyState:    parseInt32(get(normalized, "portphystate", "phystate", "physicalstate")),
-				LinkWidthActive: parseInt32(get(normalized, "linkwidthactive", "linkwidthactv", "linkwidth")),
-				LinkSpeedActive: parseInt32(get(normalized, "linkspeedactive", "linkspeedactv", "linkspeed")),
+				PortNum:         portNum,
+				LID:             lid,
+				LocalPortNum:    localPortNum,
+				PortState:       portState,
+				PortPhyState:    portPhyState,
+				LinkWidthActive: linkWidthActive,
+				LinkSpeedActive: linkSpeedActive,
 				RawJSON:         raw,
 			})
 
@@ -109,16 +141,31 @@ func recordsToParsedLog(fileName string, records []map[string]string) core.Parse
 
 		case "node":
 			nodeDesc := get(normalized, "nodedesc", "description", "desc", "name")
-			nodeType := parseInt32(get(normalized, "nodetype", "type"))
+			nodeType, err := parseOptionalInt32(normalized, "node_type", "nodetype", "type")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			numPorts, err := parseOptionalInt32(normalized, "num_ports", "numports", "ports", "portcount")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			classVersion, err := parseOptionalInt32(normalized, "class_version", "classversion")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
+			baseVersion, err := parseOptionalInt32(normalized, "base_version", "baseversion")
+			if err != nil {
+				return core.ParsedLog{}, err
+			}
 
 			parsed.Nodes = append(parsed.Nodes, core.Node{
 				NodeGUID:        get(normalized, "nodeguid", "nodeid", "node", "guid"),
 				NodeDesc:        nodeDesc,
 				NodeType:        nodeType,
 				NodeKind:        deriveNodeKind(get(normalized, "nodekind", "kind"), nodeDesc, nodeType),
-				NumPorts:        parseInt32(get(normalized, "numports", "ports", "portcount")),
-				ClassVersion:    parseInt32(get(normalized, "classversion")),
-				BaseVersion:     parseInt32(get(normalized, "baseversion")),
+				NumPorts:        numPorts,
+				ClassVersion:    classVersion,
+				BaseVersion:     baseVersion,
 				SystemImageGUID: get(normalized, "systemimageguid", "systemimage"),
 				PortGUID:        get(normalized, "portguid"),
 				RawJSON:         raw,
@@ -126,7 +173,38 @@ func recordsToParsedLog(fileName string, records []map[string]string) core.Parse
 		}
 	}
 
-	return parsed
+	return parsed, nil
+}
+
+func parseOptionalInt32(rec map[string]string, field string, keys ...string) (int32, error) {
+	value, ok := getExisting(rec, keys...)
+	if !ok {
+		return 0, nil
+	}
+
+	raw := strings.TrimSpace(value)
+	if raw == "" {
+		return 0, nil
+	}
+
+	raw = strings.Trim(raw, `"'`)
+	n, err := strconv.ParseInt(raw, 0, 32)
+	if err != nil {
+		return 0, fmt.Errorf("%w: malformed numeric field %s=%q", core.ErrParse, field, value)
+	}
+
+	return int32(n), nil
+}
+
+func getExisting(rec map[string]string, keys ...string) (string, bool) {
+	for _, key := range keys {
+		value, ok := rec[normalizeKey(key)]
+		if ok {
+			return value, true
+		}
+	}
+
+	return "", false
 }
 
 func classifyRecord(fileName string, rec map[string]string) string {

@@ -3,7 +3,7 @@ syntax = "proto3";
 package repository;
 
 import "google/protobuf/empty.proto";
-import "parser/parser.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package =
     "github.com/voronkov44/microservice-log-parser/log-services/proto/"
@@ -22,6 +22,8 @@ service Repository {
 
   rpc GetNodesByLog(GetNodesByLogRequest) returns (NodesResponse);
   rpc GetPortsByLog(GetPortsByLogRequest) returns (PortsResponse);
+
+  rpc GetTopologyData(GetTopologyDataRequest) returns (TopologyDataResponse);
 }
 
 enum LogStatus {
@@ -41,7 +43,7 @@ message CreateLogResponse {
 
 message SaveParsedLogRequest {
   int64 log_id = 1;
-  parser.ParsedLog parsed_log = 2;
+  ParsedLog parsed_log = 2;
 }
 
 message SaveParsedLogResponse {
@@ -55,6 +57,52 @@ message FailLogRequest {
   string error = 2;
 }
 
+message ParsedLog {
+  repeated ParsedNode nodes = 1;
+  repeated ParsedPort ports = 2;
+  repeated ParsedNodeInfo nodes_info = 3;
+}
+
+message ParsedNode {
+  string node_guid = 1;
+  string node_desc = 2;
+  int32 node_type = 3;
+  string node_kind = 4;
+  int32 num_ports = 5;
+
+  int32 class_version = 6;
+  int32 base_version = 7;
+  string system_image_guid = 8;
+  string port_guid = 9;
+
+  string raw_json = 10;
+}
+
+message ParsedPort {
+  string node_guid = 1;
+  string port_guid = 2;
+  int32 port_num = 3;
+
+  int32 lid = 4;
+  int32 local_port_num = 5;
+  int32 port_state = 6;
+  int32 port_phy_state = 7;
+  int32 link_width_active = 8;
+  int32 link_speed_active = 9;
+
+  string raw_json = 10;
+}
+
+message ParsedNodeInfo {
+  string node_guid = 1;
+  string serial_number = 2;
+  string part_number = 3;
+  string revision = 4;
+  string product_name = 5;
+
+  string raw_json = 6;
+}
+
 message GetLogRequest {
   int64 log_id = 1;
 }
@@ -66,8 +114,8 @@ message Log {
   int32 nodes_count = 4;
   int32 ports_count = 5;
   string error = 6;
-  string uploaded_at = 7;
-  string parsed_at = 8;
+  google.protobuf.Timestamp uploaded_at = 7;
+  google.protobuf.Timestamp parsed_at = 8;
 }
 
 message GetNodeRequest {
@@ -84,6 +132,16 @@ message GetNodesByLogRequest {
 
 message GetPortsByLogRequest {
   int64 log_id = 1;
+}
+
+message GetTopologyDataRequest {
+  int64 log_id = 1;
+}
+
+message TopologyDataResponse {
+  Log log = 1;
+  repeated NodeDetails nodes = 2;
+  repeated Port ports = 3;
 }
 
 message NodeDetails {

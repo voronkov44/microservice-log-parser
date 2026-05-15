@@ -97,6 +97,26 @@ func TestServiceParseLogFailsLogWhenSaveFails(t *testing.T) {
 	}
 }
 
+func TestServiceFailLogUsesBackgroundContext(t *testing.T) {
+	repo := &fakeRepository{}
+	service := NewService(slog.New(slog.NewTextHandler(os.Stderr, nil)), repo, &fakeParser{}, &fakeTopology{})
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	service.failLog(ctx, 101, errors.New("parse failed"))
+
+	if len(repo.failLogCalls) != 1 {
+		t.Fatalf("FailLog calls = %d, want 1", len(repo.failLogCalls))
+	}
+	if repo.failLogCalls[0].ctxErr != nil {
+		t.Fatalf("FailLog ctx err = %v, want nil", repo.failLogCalls[0].ctxErr)
+	}
+	if !repo.failLogCalls[0].hasDeadline {
+		t.Fatalf("FailLog ctx has no deadline")
+	}
+}
+
 func TestServiceGetTopology(t *testing.T) {
 	service := NewService(slog.New(slog.NewTextHandler(os.Stderr, nil)), &fakeRepository{}, &fakeParser{}, &fakeTopology{
 		topology: Topology{
@@ -120,8 +140,10 @@ func TestServiceGetTopology(t *testing.T) {
 }
 
 type failLogCall struct {
-	logID     int64
-	errorText string
+	logID       int64
+	errorText   string
+	ctxErr      error
+	hasDeadline bool
 }
 
 type fakeRepository struct {
@@ -152,8 +174,14 @@ func (f *fakeRepository) SaveParsedLog(_ context.Context, logID int64, _ ParsedL
 	return f.saveResult, f.saveParsedErr
 }
 
-func (f *fakeRepository) FailLog(_ context.Context, logID int64, errorText string) error {
-	f.failLogCalls = append(f.failLogCalls, failLogCall{logID: logID, errorText: errorText})
+func (f *fakeRepository) FailLog(ctx context.Context, logID int64, errorText string) error {
+	_, hasDeadline := ctx.Deadline()
+	f.failLogCalls = append(f.failLogCalls, failLogCall{
+		logID:       logID,
+		errorText:   errorText,
+		ctxErr:      ctx.Err(),
+		hasDeadline: hasDeadline,
+	})
 	return f.failLogErr
 }
 

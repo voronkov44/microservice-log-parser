@@ -11,7 +11,11 @@ import (
 	"github.com/voronkov44/microservice-log-parser/log-services/parser/core"
 )
 
-const maxFileSize = 64 << 20 // 64 MiB
+const (
+	maxFileSize   int64 = 64 << 20 // 64 MiB
+	maxFiles            = 1000
+	maxTotalBytes int64 = 128 << 20 // 128 MiB
+)
 
 type Engine struct {
 	dataDir string

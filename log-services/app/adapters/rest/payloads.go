@@ -115,8 +115,11 @@ type storedNodeInfoResponse struct {
 }
 
 type storedPortsResponse struct {
-	Count int                  `json:"count"`
-	Ports []storedPortResponse `json:"ports"`
+	Count  int                  `json:"count"`
+	Total  int                  `json:"total"`
+	Limit  int                  `json:"limit"`
+	Offset int                  `json:"offset"`
+	Ports  []storedPortResponse `json:"ports"`
 }
 
 type storedPortResponse struct {

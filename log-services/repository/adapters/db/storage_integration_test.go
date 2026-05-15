@@ -108,36 +108,92 @@ func TestStorageIntegrationLogLifecycle(t *testing.T) {
 		Nodes: []core.Node{{NodeGUID: "node-3", NodeDesc: "Replacement", NodeKind: "host"}},
 		Ports: []core.Port{{NodeGUID: "node-3", PortGUID: "port-3", PortNum: 1, PortState: 4}},
 	}
-	if _, err := storage.SaveParsedLog(ctx, logID, replacement); err != nil {
-		t.Fatalf("SaveParsedLog(replacement) error = %v", err)
+	if _, err := storage.SaveParsedLog(ctx, logID, replacement); !errors.Is(err, core.ErrInvalidStatus) {
+		t.Fatalf("SaveParsedLog(replacement) error = %v, want ErrInvalidStatus", err)
 	}
 
-	replacedNodes, err := storage.GetNodesByLog(ctx, logID)
+	unchangedNodes, err := storage.GetNodesByLog(ctx, logID)
 	if err != nil {
-		t.Fatalf("GetNodesByLog(replaced) error = %v", err)
+		t.Fatalf("GetNodesByLog(unchanged) error = %v", err)
 	}
-	if len(replacedNodes) != 1 || replacedNodes[0].NodeGUID != "node-3" {
-		t.Fatalf("replaced nodes = %+v", replacedNodes)
+	if len(unchangedNodes) != 2 || unchangedNodes[0].NodeGUID != "node-1" {
+		t.Fatalf("unchanged nodes = %+v", unchangedNodes)
 	}
 
-	replacedPorts, err := storage.GetPortsByLog(ctx, logID)
+	unchangedPorts, err := storage.GetPortsByLog(ctx, logID)
 	if err != nil {
-		t.Fatalf("GetPortsByLog(replaced) error = %v", err)
+		t.Fatalf("GetPortsByLog(unchanged) error = %v", err)
 	}
-	if len(replacedPorts) != 1 || replacedPorts[0].PortGUID != "port-3" {
-		t.Fatalf("replaced ports = %+v", replacedPorts)
-	}
-
-	if err := storage.FailLog(ctx, logID, "broken log"); err != nil {
-		t.Fatalf("FailLog() error = %v", err)
+	if len(unchangedPorts) != 2 || unchangedPorts[0].PortGUID != "port-1" {
+		t.Fatalf("unchanged ports = %+v", unchangedPorts)
 	}
 
-	failed, err := storage.GetLog(ctx, logID)
+	if err := storage.FailLog(ctx, logID, "broken log"); !errors.Is(err, core.ErrInvalidStatus) {
+		t.Fatalf("FailLog(parsed) error = %v, want ErrInvalidStatus", err)
+	}
+
+	stillParsed, err := storage.GetLog(ctx, logID)
+	if err != nil {
+		t.Fatalf("GetLog(still parsed) error = %v", err)
+	}
+	if stillParsed.Status != core.LogStatusParsed || stillParsed.Error != "" {
+		t.Fatalf("still parsed log = %+v", stillParsed)
+	}
+
+	topologyData, err := storage.GetTopologyData(ctx, logID)
+	if err != nil {
+		t.Fatalf("GetTopologyData() error = %v", err)
+	}
+	if topologyData.Log.ID != logID || len(topologyData.Nodes) != 2 || len(topologyData.Ports) != 2 {
+		t.Fatalf("topology data = %+v", topologyData)
+	}
+
+	failLogID, err := storage.CreateLog(ctx, "bad.log")
+	if err != nil {
+		t.Fatalf("CreateLog(fail) error = %v", err)
+	}
+	if err := storage.FailLog(ctx, failLogID, "broken log"); err != nil {
+		t.Fatalf("FailLog(processing) error = %v", err)
+	}
+	failed, err := storage.GetLog(ctx, failLogID)
 	if err != nil {
 		t.Fatalf("GetLog(failed) error = %v", err)
 	}
 	if failed.Status != core.LogStatusFailed || failed.Error != "broken log" {
 		t.Fatalf("failed log = %+v", failed)
+	}
+	if err := storage.FailLog(ctx, failLogID, "second failure"); !errors.Is(err, core.ErrInvalidStatus) {
+		t.Fatalf("FailLog(failed) error = %v, want ErrInvalidStatus", err)
+	}
+}
+
+func TestStorageIntegrationRejectsDuplicatePorts(t *testing.T) {
+	storage := openIntegrationDB(t)
+	ctx := context.Background()
+
+	logID, err := storage.CreateLog(ctx, "duplicates.log")
+	if err != nil {
+		t.Fatalf("CreateLog() error = %v", err)
+	}
+
+	parsed := core.ParsedLog{
+		Nodes: []core.Node{{NodeGUID: "node-1"}},
+		Ports: []core.Port{
+			{NodeGUID: "node-1", PortGUID: "port-a", PortNum: 1},
+			{NodeGUID: "node-1", PortGUID: "port-b", PortNum: 1},
+		},
+	}
+
+	if _, err := storage.SaveParsedLog(ctx, logID, parsed); err == nil {
+		t.Fatalf("SaveParsedLog() error is nil, want duplicate port error")
+	}
+
+	log, err := storage.GetLog(ctx, logID)
+	if err != nil {
+		t.Fatalf("GetLog() error = %v", err)
+	}
+	if log.Status != core.LogStatusProcessing {
+		t.Fatalf("log status = %q, want processing after rolled back save", log.Status)
 	}
 }
 

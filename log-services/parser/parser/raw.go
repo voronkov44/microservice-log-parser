@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"strconv"
 	"strings"
 )
 
@@ -55,22 +54,6 @@ func hasAny(rec map[string]string, keys ...string) bool {
 	}
 
 	return false
-}
-
-func parseInt32(value string) int32 {
-	value = strings.TrimSpace(value)
-	if value == "" {
-		return 0
-	}
-
-	value = strings.Trim(value, `"'`)
-
-	n, err := strconv.ParseInt(value, 0, 32)
-	if err != nil {
-		return 0
-	}
-
-	return int32(n)
 }
 
 func rawJSON(rec map[string]string) string {

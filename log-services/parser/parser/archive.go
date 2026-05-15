@@ -50,6 +50,7 @@ func (e *Engine) readSource(ctx context.Context, path string) ([]sourceFile, err
 
 func readDir(ctx context.Context, root string) ([]sourceFile, error) {
 	var files []sourceFile
+	var limits archiveLimits
 
 	err := filepath.WalkDir(root, func(path string, d os.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -64,6 +65,14 @@ func readDir(ctx context.Context, root string) ([]sourceFile, error) {
 
 		if d.IsDir() {
 			return nil
+		}
+
+		info, err := d.Info()
+		if err != nil {
+			return fmt.Errorf("stat directory file %s: %w", path, err)
+		}
+		if err := limits.addFile(path, info.Size()); err != nil {
+			return err
 		}
 
 		data, err := readSmallFile(path)
@@ -118,6 +127,7 @@ func readZip(ctx context.Context, path string) ([]sourceFile, error) {
 	}()
 
 	files := make([]sourceFile, 0, len(reader.File))
+	var limits archiveLimits
 
 	for _, file := range reader.File {
 		select {
@@ -130,8 +140,11 @@ func readZip(ctx context.Context, path string) ([]sourceFile, error) {
 			continue
 		}
 
-		if file.UncompressedSize64 > maxFileSize {
+		if file.UncompressedSize64 > uint64(maxFileSize) {
 			return nil, fmt.Errorf("%w: archive file %s is too large", core.ErrBadArguments, file.Name)
+		}
+		if err := limits.addFile(file.Name, int64(file.UncompressedSize64)); err != nil {
+			return nil, err
 		}
 
 		rc, err := file.Open()
@@ -148,7 +161,7 @@ func readZip(ctx context.Context, path string) ([]sourceFile, error) {
 		if closeErr != nil {
 			return nil, fmt.Errorf("close zip file %s: %w", file.Name, closeErr)
 		}
-		if len(data) > maxFileSize {
+		if int64(len(data)) > maxFileSize {
 			return nil, fmt.Errorf("%w: archive file %s is too large", core.ErrBadArguments, file.Name)
 		}
 
@@ -186,6 +199,7 @@ func readTar(ctx context.Context, path string, gzipped bool) ([]sourceFile, erro
 
 	tarReader := tar.NewReader(reader)
 	var files []sourceFile
+	var limits archiveLimits
 
 	for {
 		select {
@@ -207,15 +221,15 @@ func readTar(ctx context.Context, path string, gzipped bool) ([]sourceFile, erro
 			continue
 		}
 
-		if header.Size > maxFileSize {
-			return nil, fmt.Errorf("%w: archive file %s is too large", core.ErrBadArguments, header.Name)
+		if err := limits.addFile(header.Name, header.Size); err != nil {
+			return nil, err
 		}
 
 		data, err := io.ReadAll(io.LimitReader(tarReader, maxFileSize+1))
 		if err != nil {
 			return nil, fmt.Errorf("read tar file %s: %w", header.Name, err)
 		}
-		if len(data) > maxFileSize {
+		if int64(len(data)) > maxFileSize {
 			return nil, fmt.Errorf("%w: archive file %s is too large", core.ErrBadArguments, header.Name)
 		}
 
@@ -255,11 +269,40 @@ func readGzip(ctx context.Context, path string) ([]sourceFile, error) {
 	if err != nil {
 		return nil, fmt.Errorf("read gzip: %w", err)
 	}
-	if len(data) > maxFileSize {
+	if int64(len(data)) > maxFileSize {
 		return nil, fmt.Errorf("%w: gzip file is too large", core.ErrBadArguments)
 	}
 
 	name := strings.TrimSuffix(filepath.Base(path), ".gz")
+	var limits archiveLimits
+	if err := limits.addFile(name, int64(len(data))); err != nil {
+		return nil, err
+	}
 
 	return []sourceFile{{name: name, data: data}}, nil
+}
+
+type archiveLimits struct {
+	files int
+	total int64
+}
+
+func (l *archiveLimits) addFile(name string, size int64) error {
+	if size < 0 {
+		size = 0
+	}
+	if size > maxFileSize {
+		return fmt.Errorf("%w: archive file %s is too large", core.ErrBadArguments, name)
+	}
+	if l.files+1 > maxFiles {
+		return fmt.Errorf("%w: archive contains too many files", core.ErrBadArguments)
+	}
+	if l.total+size > maxTotalBytes {
+		return fmt.Errorf("%w: archive total size is too large", core.ErrBadArguments)
+	}
+
+	l.files++
+	l.total += size
+
+	return nil
 }

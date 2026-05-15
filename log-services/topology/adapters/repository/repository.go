@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	repositorypb "github.com/voronkov44/microservice-log-parser/log-services/proto/repository"
 	"github.com/voronkov44/microservice-log-parser/log-services/topology/core"
@@ -101,6 +103,21 @@ func (c *Client) GetPortsByLog(ctx context.Context, logID int64) ([]core.Port, e
 	return ports, nil
 }
 
+func (c *Client) GetTopologyData(ctx context.Context, logID int64) (core.TopologyData, error) {
+	resp, err := c.client.GetTopologyData(ctx, &repositorypb.GetTopologyDataRequest{
+		LogId: logID,
+	})
+	if err != nil {
+		return core.TopologyData{}, mapGRPCError(err)
+	}
+
+	return core.TopologyData{
+		Log:   logFromProto(resp.GetLog()),
+		Nodes: nodesFromProto(resp.GetNodes()),
+		Ports: portsFromProto(resp.GetPorts()),
+	}, nil
+}
+
 func logFromProto(in *repositorypb.Log) core.Log {
 	if in == nil {
 		return core.Log{}
@@ -113,9 +130,17 @@ func logFromProto(in *repositorypb.Log) core.Log {
 		NodesCount: in.GetNodesCount(),
 		PortsCount: in.GetPortsCount(),
 		Error:      in.GetError(),
-		UploadedAt: in.GetUploadedAt(),
-		ParsedAt:   in.GetParsedAt(),
+		UploadedAt: timestampFromProto(in.GetUploadedAt()),
+		ParsedAt:   timestampFromProto(in.GetParsedAt()),
 	}
+}
+
+func timestampFromProto(in *timestamppb.Timestamp) string {
+	if in == nil {
+		return ""
+	}
+
+	return in.AsTime().UTC().Format(time.RFC3339)
 }
 
 func logStatusFromProto(in repositorypb.LogStatus) core.LogStatus {
@@ -152,6 +177,19 @@ func nodeFromProto(in *repositorypb.NodeDetails) core.Node {
 	return node
 }
 
+func nodesFromProto(in []*repositorypb.NodeDetails) []core.Node {
+	nodes := make([]core.Node, 0, len(in))
+	for _, node := range in {
+		if node == nil {
+			continue
+		}
+
+		nodes = append(nodes, nodeFromProto(node))
+	}
+
+	return nodes
+}
+
 func portFromProto(in *repositorypb.Port) core.Port {
 	return core.Port{
 		ID:              in.GetId(),
@@ -166,12 +204,27 @@ func portFromProto(in *repositorypb.Port) core.Port {
 	}
 }
 
+func portsFromProto(in []*repositorypb.Port) []core.Port {
+	ports := make([]core.Port, 0, len(in))
+	for _, port := range in {
+		if port == nil {
+			continue
+		}
+
+		ports = append(ports, portFromProto(port))
+	}
+
+	return ports
+}
+
 func mapGRPCError(err error) error {
 	switch status.Code(err) {
 	case codes.InvalidArgument:
 		return core.ErrBadArguments
 	case codes.NotFound:
 		return core.ErrNotFound
+	case codes.FailedPrecondition:
+		return core.ErrLogNotParsed
 	case codes.Unavailable, codes.DeadlineExceeded, codes.Canceled:
 		return core.ErrUnavailable
 	default:

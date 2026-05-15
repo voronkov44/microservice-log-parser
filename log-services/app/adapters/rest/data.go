@@ -13,6 +13,11 @@ import (
 	"github.com/voronkov44/microservice-log-parser/log-services/app/pkg/res"
 )
 
+const (
+	defaultPortsLimit = 100
+	maxPortsLimit     = 500
+)
+
 func NewGetLogHandler(log *slog.Logger, service core.LogReader, timeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
@@ -45,6 +50,7 @@ func NewGetLogHandler(log *slog.Logger, service core.LogReader, timeout time.Dur
 func NewGetNodesByLogHandler(log *slog.Logger, service core.LogReader, timeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		includeRaw := includeRaw(r)
 
 		logID, err := parseInt64PathValue(r, "log_id")
 		if err != nil {
@@ -64,7 +70,7 @@ func NewGetNodesByLogHandler(log *slog.Logger, service core.LogReader, timeout t
 
 		response := storedNodesResponse{
 			Count: len(nodes),
-			Nodes: storedNodesToResponse(nodes),
+			Nodes: storedNodesToResponse(nodes, includeRaw),
 		}
 
 		res.Json(w, response, http.StatusOK)
@@ -80,6 +86,13 @@ func NewGetNodesByLogHandler(log *slog.Logger, service core.LogReader, timeout t
 func NewGetPortsByLogHandler(log *slog.Logger, service core.LogReader, timeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		includeRaw := includeRaw(r)
+
+		limit, offset, err := parsePagination(r)
+		if err != nil {
+			res.Json(w, errorResponse{Error: err.Error()}, httpStatusFromError(err))
+			return
+		}
 
 		logID, err := parseInt64PathValue(r, "log_id")
 		if err != nil {
@@ -97,9 +110,13 @@ func NewGetPortsByLogHandler(log *slog.Logger, service core.LogReader, timeout t
 			return
 		}
 
+		page := paginatePorts(ports, limit, offset)
 		response := storedPortsResponse{
-			Count: len(ports),
-			Ports: storedPortsToResponse(ports),
+			Count:  len(page),
+			Total:  len(ports),
+			Limit:  limit,
+			Offset: offset,
+			Ports:  storedPortsToResponse(page, includeRaw),
 		}
 
 		res.Json(w, response, http.StatusOK)
@@ -115,6 +132,7 @@ func NewGetPortsByLogHandler(log *slog.Logger, service core.LogReader, timeout t
 func NewGetNodeHandler(log *slog.Logger, service core.LogReader, timeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		includeRaw := includeRaw(r)
 
 		nodeID, err := parseInt64PathValue(r, "node_id")
 		if err != nil {
@@ -132,7 +150,7 @@ func NewGetNodeHandler(log *slog.Logger, service core.LogReader, timeout time.Du
 			return
 		}
 
-		res.Json(w, storedNodeToResponse(node), http.StatusOK)
+		res.Json(w, storedNodeToResponse(node, includeRaw), http.StatusOK)
 
 		log.Info("get node handled",
 			"node_id", nodeID,
@@ -144,6 +162,13 @@ func NewGetNodeHandler(log *slog.Logger, service core.LogReader, timeout time.Du
 func NewGetPortsByNodeHandler(log *slog.Logger, service core.LogReader, timeout time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+		includeRaw := includeRaw(r)
+
+		limit, offset, err := parsePagination(r)
+		if err != nil {
+			res.Json(w, errorResponse{Error: err.Error()}, httpStatusFromError(err))
+			return
+		}
 
 		nodeID, err := parseInt64PathValue(r, "node_id")
 		if err != nil {
@@ -161,9 +186,13 @@ func NewGetPortsByNodeHandler(log *slog.Logger, service core.LogReader, timeout 
 			return
 		}
 
+		page := paginatePorts(ports, limit, offset)
 		response := storedPortsResponse{
-			Count: len(ports),
-			Ports: storedPortsToResponse(ports),
+			Count:  len(page),
+			Total:  len(ports),
+			Limit:  limit,
+			Offset: offset,
+			Ports:  storedPortsToResponse(page, includeRaw),
 		}
 
 		res.Json(w, response, http.StatusOK)
@@ -174,6 +203,50 @@ func NewGetPortsByNodeHandler(log *slog.Logger, service core.LogReader, timeout 
 			"duration", time.Since(start),
 		)
 	}
+}
+
+func includeRaw(r *http.Request) bool {
+	return strings.EqualFold(strings.TrimSpace(r.URL.Query().Get("include_raw")), "true")
+}
+
+func parsePagination(r *http.Request) (int, int, error) {
+	query := r.URL.Query()
+
+	limit := defaultPortsLimit
+	if raw := strings.TrimSpace(query.Get("limit")); raw != "" {
+		value, err := strconv.Atoi(raw)
+		if err != nil || value <= 0 {
+			return 0, 0, fmt.Errorf("%w: limit must be positive integer", core.ErrBadArguments)
+		}
+		if value > maxPortsLimit {
+			return 0, 0, fmt.Errorf("%w: limit must not exceed %d", core.ErrBadArguments, maxPortsLimit)
+		}
+		limit = value
+	}
+
+	offset := 0
+	if raw := strings.TrimSpace(query.Get("offset")); raw != "" {
+		value, err := strconv.Atoi(raw)
+		if err != nil || value < 0 {
+			return 0, 0, fmt.Errorf("%w: offset must be non-negative integer", core.ErrBadArguments)
+		}
+		offset = value
+	}
+
+	return limit, offset, nil
+}
+
+func paginatePorts(ports []core.Port, limit int, offset int) []core.Port {
+	if offset >= len(ports) {
+		return []core.Port{}
+	}
+
+	end := offset + limit
+	if end > len(ports) {
+		end = len(ports)
+	}
+
+	return ports[offset:end]
 }
 
 func parseInt64PathValue(r *http.Request, name string) (int64, error) {
@@ -203,17 +276,22 @@ func storedLogToResponse(in core.Log) storedLogResponse {
 	}
 }
 
-func storedNodesToResponse(in []core.Node) []storedNodeResponse {
+func storedNodesToResponse(in []core.Node, includeRaw bool) []storedNodeResponse {
 	out := make([]storedNodeResponse, 0, len(in))
 
 	for _, node := range in {
-		out = append(out, storedNodeToResponse(node))
+		out = append(out, storedNodeToResponse(node, includeRaw))
 	}
 
 	return out
 }
 
-func storedNodeToResponse(in core.Node) storedNodeResponse {
+func storedNodeToResponse(in core.Node, includeRaw bool) storedNodeResponse {
+	rawJSON := ""
+	if includeRaw {
+		rawJSON = in.RawJSON
+	}
+
 	return storedNodeResponse{
 		ID:              in.ID,
 		LogID:           in.LogID,
@@ -226,14 +304,19 @@ func storedNodeToResponse(in core.Node) storedNodeResponse {
 		BaseVersion:     in.BaseVersion,
 		SystemImageGUID: in.SystemImageGUID,
 		PortGUID:        in.PortGUID,
-		Info:            storedNodeInfoToResponse(in.Info),
-		RawJSON:         in.RawJSON,
+		Info:            storedNodeInfoToResponse(in.Info, includeRaw),
+		RawJSON:         rawJSON,
 	}
 }
 
-func storedNodeInfoToResponse(in *core.NodeInfo) *storedNodeInfoResponse {
+func storedNodeInfoToResponse(in *core.NodeInfo, includeRaw bool) *storedNodeInfoResponse {
 	if in == nil {
 		return nil
+	}
+
+	rawJSON := ""
+	if includeRaw {
+		rawJSON = in.RawJSON
 	}
 
 	return &storedNodeInfoResponse{
@@ -244,21 +327,26 @@ func storedNodeInfoToResponse(in *core.NodeInfo) *storedNodeInfoResponse {
 		PartNumber:   in.PartNumber,
 		Revision:     in.Revision,
 		ProductName:  in.ProductName,
-		RawJSON:      in.RawJSON,
+		RawJSON:      rawJSON,
 	}
 }
 
-func storedPortsToResponse(in []core.Port) []storedPortResponse {
+func storedPortsToResponse(in []core.Port, includeRaw bool) []storedPortResponse {
 	out := make([]storedPortResponse, 0, len(in))
 
 	for _, port := range in {
-		out = append(out, storedPortToResponse(port))
+		out = append(out, storedPortToResponse(port, includeRaw))
 	}
 
 	return out
 }
 
-func storedPortToResponse(in core.Port) storedPortResponse {
+func storedPortToResponse(in core.Port, includeRaw bool) storedPortResponse {
+	rawJSON := ""
+	if includeRaw {
+		rawJSON = in.RawJSON
+	}
+
 	return storedPortResponse{
 		ID:              in.ID,
 		LogID:           in.LogID,
@@ -272,6 +360,6 @@ func storedPortToResponse(in core.Port) storedPortResponse {
 		PortPhyState:    in.PortPhyState,
 		LinkWidthActive: in.LinkWidthActive,
 		LinkSpeedActive: in.LinkSpeedActive,
-		RawJSON:         in.RawJSON,
+		RawJSON:         rawJSON,
 	}
 }

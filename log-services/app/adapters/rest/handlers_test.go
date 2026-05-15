@@ -25,6 +25,7 @@ func TestParseLogHandler(t *testing.T) {
 		{name: "valid body", body: `{"path":"log.zip"}`, wantStatus: http.StatusOK},
 		{name: "invalid json", body: `{"path":`, wantStatus: http.StatusBadRequest},
 		{name: "empty path", body: `{"path":""}`, serviceErr: core.ErrBadArguments, wantStatus: http.StatusBadRequest},
+		{name: "conflict", body: `{"path":"log.zip"}`, serviceErr: core.ErrConflict, wantStatus: http.StatusConflict},
 	}
 
 	for _, tt := range tests {
@@ -59,6 +60,20 @@ func TestParseLogHandler(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestParseLogHandlerRejectsLargeBody(t *testing.T) {
+	service := &fakeAppService{}
+	handler := NewParseLogHandler(testLogger(), service, time.Second)
+	body := `{"path":"` + strings.Repeat("x", parseRequestBodyLimit) + `"}`
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/parse", strings.NewReader(body))
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusRequestEntityTooLarge {
+		t.Fatalf("status = %d, want %d, body = %s", rec.Code, http.StatusRequestEntityTooLarge, rec.Body.String())
 	}
 }
 
@@ -169,6 +184,108 @@ func TestGetHandlersSuccess(t *testing.T) {
 	}
 }
 
+func TestRawJSONRequiresIncludeRaw(t *testing.T) {
+	service := &fakeAppService{
+		node: core.Node{
+			ID:       201,
+			LogID:    101,
+			NodeGUID: "node-1",
+			RawJSON:  `{"node":"raw"}`,
+			Info: &core.NodeInfo{
+				ID:      301,
+				NodeID:  201,
+				RawJSON: `{"info":"raw"}`,
+			},
+		},
+	}
+	handler := NewGetNodeHandler(testLogger(), service, time.Second)
+
+	tests := []struct {
+		name        string
+		target      string
+		wantRawJSON bool
+	}{
+		{name: "default omits raw", target: "/", wantRawJSON: false},
+		{name: "include raw", target: "/?include_raw=true", wantRawJSON: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req := httptest.NewRequest(http.MethodGet, tt.target, nil)
+			req.SetPathValue("node_id", "201")
+			rec := httptest.NewRecorder()
+
+			handler.ServeHTTP(rec, req)
+
+			if rec.Code != http.StatusOK {
+				t.Fatalf("status = %d, want 200, body = %s", rec.Code, rec.Body.String())
+			}
+
+			var resp map[string]any
+			decodeJSON(t, rec.Body.String(), &resp)
+			_, hasRaw := resp["raw_json"]
+			if hasRaw != tt.wantRawJSON {
+				t.Fatalf("raw_json present = %v, want %v; body = %s", hasRaw, tt.wantRawJSON, rec.Body.String())
+			}
+		})
+	}
+}
+
+func TestPortsPaginationAndRawJSON(t *testing.T) {
+	service := &fakeAppService{
+		node: core.Node{ID: 201},
+		ports: []core.Port{
+			{ID: 1, NodeID: 201, NodeGUID: "node-1", PortNum: 1, RawJSON: `{"port":1}`},
+			{ID: 2, NodeID: 201, NodeGUID: "node-1", PortNum: 2, RawJSON: `{"port":2}`},
+			{ID: 3, NodeID: 201, NodeGUID: "node-1", PortNum: 3, RawJSON: `{"port":3}`},
+		},
+	}
+	handler := NewGetPortsByNodeHandler(testLogger(), service, time.Second)
+
+	req := httptest.NewRequest(http.MethodGet, "/?limit=2&offset=1", nil)
+	req.SetPathValue("node_id", "201")
+	rec := httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200, body = %s", rec.Code, rec.Body.String())
+	}
+
+	var resp storedPortsResponse
+	decodeJSON(t, rec.Body.String(), &resp)
+	if resp.Count != 2 || resp.Total != 3 || resp.Limit != 2 || resp.Offset != 1 {
+		t.Fatalf("pagination response = %+v", resp)
+	}
+	if resp.Ports[0].ID != 2 || resp.Ports[0].RawJSON != "" {
+		t.Fatalf("ports response = %+v", resp.Ports)
+	}
+
+	req = httptest.NewRequest(http.MethodGet, "/?limit=1&include_raw=true", nil)
+	req.SetPathValue("node_id", "201")
+	rec = httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("status = %d, want 200, body = %s", rec.Code, rec.Body.String())
+	}
+	decodeJSON(t, rec.Body.String(), &resp)
+	if resp.Count != 1 || resp.Ports[0].RawJSON == "" {
+		t.Fatalf("include_raw response = %+v", resp)
+	}
+
+	req = httptest.NewRequest(http.MethodGet, "/?limit=bad", nil)
+	req.SetPathValue("node_id", "201")
+	rec = httptest.NewRecorder()
+
+	handler.ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want 400, body = %s", rec.Code, rec.Body.String())
+	}
+}
+
 func TestHandlersRejectInvalidIDs(t *testing.T) {
 	service := &fakeAppService{}
 
@@ -206,6 +323,7 @@ func TestHandlersMapServiceErrors(t *testing.T) {
 		wantStatus int
 	}{
 		{name: "not found", err: core.ErrNotFound, wantStatus: http.StatusNotFound},
+		{name: "conflict", err: core.ErrConflict, wantStatus: http.StatusConflict},
 		{name: "unavailable", err: core.ErrUnavailable, wantStatus: http.StatusServiceUnavailable},
 		{name: "unknown", err: errors.New("boom"), wantStatus: http.StatusInternalServerError},
 	}
@@ -240,6 +358,9 @@ type fakeAppService struct {
 
 	ports             []core.Port
 	getPortsByNodeErr error
+	nodes             []core.Node
+	getNodesByLogErr  error
+	getPortsByLogErr  error
 
 	topology       core.Topology
 	getTopologyErr error
@@ -263,11 +384,11 @@ func (f *fakeAppService) GetPortsByNode(context.Context, int64) ([]core.Port, er
 }
 
 func (f *fakeAppService) GetNodesByLog(context.Context, int64) ([]core.Node, error) {
-	return nil, nil
+	return f.nodes, f.getNodesByLogErr
 }
 
 func (f *fakeAppService) GetPortsByLog(context.Context, int64) ([]core.Port, error) {
-	return nil, nil
+	return f.ports, f.getPortsByLogErr
 }
 
 func (f *fakeAppService) GetTopology(context.Context, int64) (core.Topology, error) {

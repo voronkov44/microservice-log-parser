@@ -2,9 +2,13 @@ package core
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"strings"
+	"time"
 )
+
+const failLogTimeout = 5 * time.Second
 
 type Service struct {
 	log        *slog.Logger
@@ -114,12 +118,24 @@ func (s *Service) GetTopology(ctx context.Context, logID int64) (Topology, error
 	return s.topology.GetTopology(ctx, logID)
 }
 
-func (s *Service) failLog(ctx context.Context, logID int64, cause error) {
+func (s *Service) failLog(_ context.Context, logID int64, cause error) {
 	if logID <= 0 || cause == nil {
 		return
 	}
 
+	ctx, cancel := context.WithTimeout(context.Background(), failLogTimeout)
+	defer cancel()
+
 	if err := s.repository.FailLog(ctx, logID, cause.Error()); err != nil {
+		if errors.Is(err, ErrConflict) {
+			s.log.Debug("log was already finalized while marking as failed",
+				"log_id", logID,
+				"original_error", cause,
+				"fail_error", err,
+			)
+			return
+		}
+
 		s.log.Warn("failed to mark log as failed",
 			"log_id", logID,
 			"original_error", cause,

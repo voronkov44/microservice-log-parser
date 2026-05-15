@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
-	parserpb "github.com/voronkov44/microservice-log-parser/log-services/proto/parser"
 	repositorypb "github.com/voronkov44/microservice-log-parser/log-services/proto/repository"
 	"github.com/voronkov44/microservice-log-parser/log-services/repository/core"
 )
@@ -156,7 +157,24 @@ func (s *Server) GetPortsByLog(ctx context.Context, req *repositorypb.GetPortsBy
 	}, nil
 }
 
-func parsedLogFromProto(in *parserpb.ParsedLog) (core.ParsedLog, error) {
+func (s *Server) GetTopologyData(ctx context.Context, req *repositorypb.GetTopologyDataRequest) (*repositorypb.TopologyDataResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "request is nil")
+	}
+
+	data, err := s.service.GetTopologyData(ctx, req.GetLogId())
+	if err != nil {
+		return nil, grpcError(err)
+	}
+
+	return &repositorypb.TopologyDataResponse{
+		Log:   logToProto(data.Log),
+		Nodes: nodesToProto(data.Nodes),
+		Ports: portsToProto(data.Ports),
+	}, nil
+}
+
+func parsedLogFromProto(in *repositorypb.ParsedLog) (core.ParsedLog, error) {
 	if in == nil {
 		return core.ParsedLog{}, core.ErrBadArguments
 	}
@@ -232,9 +250,22 @@ func logToProto(in core.Log) *repositorypb.Log {
 		NodesCount: in.NodesCount,
 		PortsCount: in.PortsCount,
 		Error:      in.Error,
-		UploadedAt: in.UploadedAt,
-		ParsedAt:   in.ParsedAt,
+		UploadedAt: timestampToProto(in.UploadedAt),
+		ParsedAt:   timestampToProto(in.ParsedAt),
 	}
+}
+
+func timestampToProto(value string) *timestamppb.Timestamp {
+	if value == "" {
+		return nil
+	}
+
+	t, err := time.Parse(time.RFC3339, value)
+	if err != nil {
+		return nil
+	}
+
+	return timestamppb.New(t)
 }
 
 func logStatusToProto(status core.LogStatus) repositorypb.LogStatus {
@@ -327,6 +358,8 @@ func grpcError(err error) error {
 		return status.Error(codes.InvalidArgument, err.Error())
 	case errors.Is(err, core.ErrNotFound):
 		return status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, core.ErrInvalidStatus):
+		return status.Error(codes.FailedPrecondition, err.Error())
 	case errors.Is(err, core.ErrUnavailable):
 		return status.Error(codes.Unavailable, err.Error())
 	default:

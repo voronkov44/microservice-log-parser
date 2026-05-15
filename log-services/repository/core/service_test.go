@@ -47,6 +47,10 @@ func TestServiceRejectsBadArguments(t *testing.T) {
 			_, err := service.GetPortsByLog(ctx, -1)
 			return err
 		}},
+		{name: "GetTopologyData bad id", call: func() error {
+			_, err := service.GetTopologyData(ctx, -1)
+			return err
+		}},
 	}
 
 	for _, tt := range tests {
@@ -101,6 +105,10 @@ func TestServicePropagatesDBErrors(t *testing.T) {
 			_, err := s.GetPortsByLog(ctx, 1)
 			return err
 		}},
+		{name: "GetTopologyData", db: &fakeDB{getTopologyDataErr: wantErr}, call: func(s *Service) error {
+			_, err := s.GetTopologyData(ctx, 1)
+			return err
+		}},
 	}
 
 	for _, tt := range tests {
@@ -115,15 +123,16 @@ func TestServicePropagatesDBErrors(t *testing.T) {
 }
 
 type fakeDB struct {
-	pingErr           error
-	createLogErr      error
-	saveParsedLogErr  error
-	failLogErr        error
-	getLogErr         error
-	getNodeErr        error
-	getPortsByNodeErr error
-	getNodesByLogErr  error
-	getPortsByLogErr  error
+	pingErr            error
+	createLogErr       error
+	saveParsedLogErr   error
+	failLogErr         error
+	getLogErr          error
+	getNodeErr         error
+	getPortsByNodeErr  error
+	getNodesByLogErr   error
+	getPortsByLogErr   error
+	getTopologyDataErr error
 }
 
 func (f *fakeDB) Ping(context.Context) error {
@@ -160,4 +169,8 @@ func (f *fakeDB) GetNodesByLog(context.Context, int64) ([]Node, error) {
 
 func (f *fakeDB) GetPortsByLog(context.Context, int64) ([]Port, error) {
 	return []Port{{ID: 31}}, f.getPortsByLogErr
+}
+
+func (f *fakeDB) GetTopologyData(context.Context, int64) (TopologyData, error) {
+	return TopologyData{Log: Log{ID: 11}, Nodes: []Node{{ID: 21}}, Ports: []Port{{ID: 31}}}, f.getTopologyDataErr
 }

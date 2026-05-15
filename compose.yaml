@@ -14,7 +14,7 @@ services:
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
       LOG_FILE_PATH: ${APP_LOG_FILE_PATH:-/logs/app.log}
-      APP_ADDRESS: :8080
+      PORT: 8080
       PARSER_GRPC_ADDRESS: parser:8080
       REPOSITORY_GRPC_ADDRESS: repository:8080
       TOPOLOGY_GRPC_ADDRESS: topology:8080
@@ -57,7 +57,7 @@ services:
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-DEBUG}
       REPOSITORY_ADDRESS: :8080
-      DB_ADDRESS: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-postgres}?sslmode=disable
+      DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-postgres}?sslmode=disable
     depends_on:
       postgres:
         condition: service_healthy
