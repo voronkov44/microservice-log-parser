@@ -6,7 +6,7 @@ COMPOSE := ${container_runtime} compose --env-file $(ENV_FILE)
 SERVICE ?=
 
 # all services
-.PHONY: up down clean logs ps run-tests test test-unit test-e2e test-all lint proto tools
+.PHONY: up down clean logs ps run-tests test test-unit test-e2e-sh test-smoke test-e2e test-all lint proto tools
 
 up: down
 	$(COMPOSE) up --build -d
@@ -41,11 +41,17 @@ test: test-unit
 test-unit:
 	$(MAKE) -C log-services test-unit
 
-test-e2e:
+test-e2e-sh:
 	$(COMPOSE) up --build -d
 	BASE_URL=$${BASE_URL:-http://localhost:8080} ./tests/e2e.sh
 
-test-all: lint test-unit test-e2e
+test-smoke:
+	$(COMPOSE) up --build -d
+	cd tests && BASE_URL=$${BASE_URL:-http://localhost:8080} go test -v ./...
+
+test-e2e: test-smoke
+
+test-all: lint test-unit test-smoke
 
 lint:
 	$(MAKE) -C log-services lint
